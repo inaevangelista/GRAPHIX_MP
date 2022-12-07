@@ -36,7 +36,7 @@ void main(){
 		// below here is ignore
 	//}
 
-	vec4 pixelColorFinal = pixelColor * pixelColor2;
+	vec4 pixelColorFinal = pixelColor;// * pixelColor2;
 
 	//vec3 normal = normalize(normCoord);
 	vec3 normal = texture(norm_tex, texCoord).rgb;

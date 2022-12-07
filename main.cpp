@@ -69,7 +69,7 @@ int main(void)
 
     /////////
 
-    std::string path = "3D/plane.obj";
+    std::string path = "3D/submarine.obj";
     std::vector<tinyobj::shape_t> shapes;
     std::vector<tinyobj::material_t> material;
     std::string warning, error;
@@ -98,7 +98,7 @@ int main(void)
 
     stbi_set_flip_vertically_on_load(true);
     int img_width, img_height, color_channels;
-    unsigned char* tex_bytes = stbi_load("3D/yae.png",
+    unsigned char* tex_bytes = stbi_load("3D/sub_tex.png",
         &img_width,
         &img_height,
         &color_channels, 0);
@@ -126,7 +126,7 @@ int main(void)
     ///
 
     //int img_width, img_height, color_channels;
-    unsigned char* tex_bytes2 = stbi_load("3D/brickwall.jpg",
+    unsigned char* tex_bytes2 = stbi_load("3D/SubmarineUV.jpg",
         &img_width,
         &img_height,
         &color_channels, 0);
@@ -155,7 +155,7 @@ int main(void)
     ///
 
     //int img_width, img_height, color_channels;
-    unsigned char* norm_bytes = stbi_load("3D/brickwall_normal.jpg",
+    unsigned char* norm_bytes = stbi_load("3D/metal_normal.png",
         &img_width,
         &img_height,
         &color_channels, 0);
@@ -168,12 +168,12 @@ int main(void)
     glTexImage2D(
         GL_TEXTURE_2D,
         0,
-        GL_RGB, //GL_RGB = jpegs / pngs w/o a
+        GL_RGBA, //GL_RGB = jpegs / pngs w/o a
         //GL_RGBA = png / images w a
         img_width,
         img_height,
         0,
-        GL_RGB,
+        GL_RGBA,
         GL_UNSIGNED_BYTE,
         norm_bytes
     );
@@ -603,7 +603,7 @@ int main(void)
     z = 0.0f;
 
     float scale_x, scale_y, scale_z, scale_x2, scale_y2, scale_z2;
-    scale_x = scale_y = scale_z = 5.f;
+    scale_x = scale_y = scale_z = 0.8f;
     scale_x2 = scale_y2 = scale_z2 = 3.1f;
 
     float rot_x, rot_y, rot_z;
@@ -622,11 +622,11 @@ int main(void)
     glm::vec3 lightPos = glm::vec3(-5, 5, 0);
     glm::vec3 lightColor = glm::vec3(1, 1, 1);
 
-    float ambientStr = 0.2f;
+    float ambientStr = 0.8f;
     glm::vec3 ambientColor = glm::vec3(1, 1, 1);
 
-    float specStr = 3.f;
-    float specPhong = 25.0f; 
+    float specStr = 2.f;
+    float specPhong = 2.0f; 
 
     
 
@@ -733,10 +733,10 @@ int main(void)
         glBindTexture(GL_TEXTURE_2D, texture);
         glUniform1i(texOAddress, 0);
 
-        glActiveTexture(GL_TEXTURE2);
-        GLuint tex2Address = glGetUniformLocation(shaderProgram, "tex2");
-        glBindTexture(GL_TEXTURE_2D, texture2);
-        glUniform1i(tex2Address, 2);
+        //glActiveTexture(GL_TEXTURE2);
+        //GLuint tex2Address = glGetUniformLocation(shaderProgram, "tex2");
+        //glBindTexture(GL_TEXTURE_2D, texture2);
+        //glUniform1i(tex2Address, 2);
        
         glActiveTexture(GL_TEXTURE1);
         GLuint tex1Address = glGetUniformLocation(shaderProgram, "norm_tex");
