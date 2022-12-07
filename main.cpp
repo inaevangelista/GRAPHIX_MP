@@ -15,7 +15,7 @@
 #include "stb_image.h"
 
 float mod_x = 0;
-float y_mod = 3.0f;
+float y_mod = 0.0f;
 float z_mod = -5.0f;
 void Key_Callback(GLFWwindow* window,
     int key, //KeyCode
@@ -26,20 +26,20 @@ void Key_Callback(GLFWwindow* window,
 {
     if (key == GLFW_KEY_D &&
         action == GLFW_PRESS) {
-        mod_x += 10.0f;
+        mod_x += 1.0f;
     }
 
     if (key == GLFW_KEY_A &&
         action == GLFW_PRESS) {
-        mod_x -= 10.0f;
+        mod_x -= 1.0f;
     }
 
     if (key == GLFW_KEY_S) {
-        y_mod -= 0.3f;
+        y_mod -= 1.0f;
     }
 
     if (key == GLFW_KEY_W) {
-        y_mod += 0.3f;
+        y_mod += 1.0f;
     }
 }
 
@@ -302,12 +302,12 @@ int main(void)
 
     
         std::string facesSkybox[]{
-            "Skybox/rainbow_rt.png", // right
-            "Skybox/rainbow_lf.png", // left
-            "Skybox/rainbow_up.png", // up
-            "Skybox/rainbow_dn.png", // down
-            "Skybox/rainbow_ft.png", // front
-            "Skybox/rainbow_bk.png"  // back
+            "Skybox_UW/whirlpool_rt.png", // right
+            "Skybox_UW/whirlpool_lf.png", // left
+            "Skybox_UW/whirlpool_up.png", // up
+            "Skybox_UW/whirlpool_dn.png", // down
+            "Skybox_UW/whirlpool_ft.png", // front
+            "Skybox_UW/whirlpool_bk.png"  // back
         };
     
     
@@ -661,7 +661,7 @@ int main(void)
         glm::mat4 cameraPosMatrix = glm::translate(glm::mat4(1.0f), cameraPos * -1.0f);
 
         glm::vec3 WorldUp = glm::vec3(0, 1.0f, 0);
-        glm::vec3 cameraCenter = glm::vec3(mod_x, 0, 0);
+        glm::vec3 cameraCenter = glm::vec3(mod_x, y_mod, 0);
 
         glm::mat4 viewMatrix = glm::lookAt(cameraPos, cameraCenter, WorldUp);
 
