@@ -173,6 +173,8 @@ public:
         float look_x = z * -sinf(swing * (M_PI / 180)) * cosf((elevation) * (M_PI / 180));
         float look_y = z * -sinf((elevation) * (M_PI / 180));
         float look_z = -z * cosf((swing) * (M_PI / 180)) * cosf((elevation) * (M_PI / 180));
+
+        cameraPos = glm::vec3(-look_x, -look_y, look_z);
     }
 
 };
@@ -246,8 +248,6 @@ int main(void)
 
     float screenWidth = 750.0f;
     float screenHeight = 750.0f;
-
-
 
 
     /* Create a windowed mode window and its OpenGL context */
@@ -885,15 +885,15 @@ int main(void)
 
         lightPos.z = x_mod;
 
-        //theta = mod_x;
+        //theta = x_mod;
         //z = z_mod;
         //theta += 0.01f;
 
         // Camera ----------------------------------------
         if (isFirstPerson) {          
             projection_matrix = FirstPerson.projection_matrix;
-            //cameraPos = FirstPerson.cameraPos;
             FirstPerson.moveCamera(z_mod);
+            cameraPos = FirstPerson.cameraPos;
             worldUp = FirstPerson.worldUp;
             temp_view_Matrix = FirstPerson.view_matrix;
             
