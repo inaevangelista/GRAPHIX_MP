@@ -53,10 +53,7 @@ public:
     OrthoCamera(glm::mat4 projMatrix, glm::vec3 camPos, glm::vec3 wUp) {
         projection_matrix = projMatrix;
         cameraPos = camPos;
-        worldUp = wUp;
-        // change view matrix if needed (lookat)
-        // view_matrix = glm::lookAt(x,y,z)
-        
+        worldUp = wUp;       
     }
 
     OrthoCamera(glm::mat4 projMatrix, glm::vec3 camPos, glm::vec3 wUp, glm::vec3 camCenter) {
@@ -81,11 +78,6 @@ public:
         projection_matrix = projMatrix;
         cameraPos = camPos;
         worldUp = wUp;
-        // change cam center if needed
-        // cameraCenter =
-
-        // change view matrix if needed (lookat)
-        // view_matrix = glm::lookAt(x,y,z)
     }
 
     PerspectiveCamera(glm::mat4 projMatrix, glm::vec3 camPos, glm::vec3 wUp, glm::vec3 camCenter) {
@@ -108,6 +100,7 @@ float z_mod = -5.0f;
 bool isFirstPerson = true;
 bool isTopDown = false;
 bool isThirdPerson = false;
+bool lastPerspective = false;
 
 void Key_Callback(GLFWwindow* window,
     int key, //KeyCode
@@ -116,13 +109,11 @@ void Key_Callback(GLFWwindow* window,
     int mods //Modifier keys
 )
 {
-    if (key == GLFW_KEY_D &&
-        action == GLFW_PRESS) {
+    if (key == GLFW_KEY_D) {
         x_mod += 1.0f;
     }
 
-    if (key == GLFW_KEY_A &&
-        action == GLFW_PRESS) {
+    if (key == GLFW_KEY_A) {
         x_mod -= 1.0f;
     }
 
@@ -144,15 +135,37 @@ void Key_Callback(GLFWwindow* window,
     }
 
     // 1st and 3rd Person View
-    if (key == GLFW_KEY_1 ) {
-        isFirstPerson = true;
-        isTopDown = false;
+    if (key == GLFW_KEY_1  && action == GLFW_PRESS) {
+
+        /*
+            lastPerspective = true (First Person)
+            lastPerspective = false (Third Person)
+        */
+        
+        if (!lastPerspective) { // Change from 1st Person to 3rd Person
+            isFirstPerson = false;
+            isThirdPerson = true;
+            isTopDown = false;
+
+            // Next Persp
+            lastPerspective = true;
+        }
+        else  {
+            isFirstPerson = true;
+            isThirdPerson = false;
+            isTopDown = false;
+
+            // Next Persp
+            lastPerspective = false;
+        }
+        
         
     }
 
     // Top Down View
     if (key == GLFW_KEY_2) {
         isFirstPerson = false;
+        isThirdPerson = false;
         isTopDown = true;
     }
 
@@ -758,14 +771,17 @@ int main(void)
     // proj matrix
     glm::mat4 fp_matrix = glm::perspective(glm::radians(60.0f), screenHeight / screenWidth, 0.1f, 100.0f);
     glm::mat4 td_matrix = glm::ortho(-10.0f, 10.0f, -10.0f, 10.0f, -100.0f, 100.0f);
+    glm::mat4 tp_matrix = glm::perspective(glm::radians(90.0f), screenHeight / screenWidth, 0.1f, 100.0f);
 
     // CamPos
     glm::vec3 fp_cameraPos = glm::vec3(0, 0, 25.0f);
     glm::vec3 td_cameraPos = glm::vec3(0, 10, 5.0f);
+    glm::vec3 tp_cameraPos = glm::vec3(5, 5, 15.0f);
 
     // World Up
     glm::vec3 fp_worldUp = glm::vec3(0, 1.0f, 0);
     glm::vec3 td_worldUp = glm::vec3(0, 1.0f, 0);
+    glm::vec3 tp_worldUp = glm::vec3(0, 1.0f, 0);
 
     // Default Values -- Can change
     glm::vec3 cameraPos = glm::vec3(0, 0, 10.0f);
@@ -778,6 +794,7 @@ int main(void)
     PerspectiveCamera FirstPerson(fp_matrix, fp_cameraPos, fp_worldUp);
   
     // 3rd Person
+    PerspectiveCamera ThirdPerson(tp_matrix, tp_cameraPos, tp_worldUp);
 
     // Top-Down
     OrthoCamera TopDown(td_matrix, td_cameraPos, td_worldUp);
@@ -819,10 +836,19 @@ int main(void)
             temp_view_Matrix = FirstPerson.view_matrix;
             
             // Remove other views
-            isTopDown = false;
+                isTopDown = false;
+            isThirdPerson = false;
 
         } else if(isThirdPerson) {
             // Third Person
+            projection_matrix = ThirdPerson.projection_matrix;
+            cameraPos = ThirdPerson.cameraPos;
+            worldUp = ThirdPerson.worldUp;
+            temp_view_Matrix = ThirdPerson.view_matrix;
+
+            // Remove other views
+            isFirstPerson = false;
+                isTopDown = false;
 
         } else if(isTopDown) {
             // Top Down
@@ -830,7 +856,10 @@ int main(void)
             cameraPos = TopDown.cameraPos;
             worldUp = TopDown.worldUp;
             temp_view_Matrix = TopDown.view_matrix;
+            
+            // Remove other views
             isFirstPerson = false;
+            isThirdPerson = false;
         }
         //
 
