@@ -26,6 +26,7 @@ public:
         lightColor = color;
 
     }
+
 };
 
 // Camera Base Class
@@ -113,13 +114,11 @@ void Key_Callback(GLFWwindow* window,
     int mods //Modifier keys
 )
 {
-    if (key == GLFW_KEY_D &&
-        action == GLFW_PRESS) {
+    if (key == GLFW_KEY_D ) {
         mod_x += 1.0f;
     }
 
-    if (key == GLFW_KEY_A &&
-        action == GLFW_PRESS) {
+    if (key == GLFW_KEY_A ) {
         mod_x -= 1.0f;
     }
 
@@ -819,8 +818,10 @@ int main(void)
             worldUp = TopDown.worldUp;
             temp_view_Matrix = TopDown.view_matrix;
             isFirstPerson = false;
+
+            // 
+            glm::vec3 playerCenter = glm::vec3(mod_x, y_mod, 0);
         }
-        //
 
         // Camera End ----------------------------------------
 
@@ -857,6 +858,7 @@ int main(void)
         //////////////////////////
 
         glm::mat4 transformation_matrix = glm::mat4(1.0f);
+
         //Translation
         transformation_matrix = glm::translate(identity_matrix,
             glm::vec3(x, y, z + -10.0f));
@@ -905,11 +907,15 @@ int main(void)
         glBindTexture(GL_TEXTURE_2D, norm_tex);
         glUniform1i(tex1Address, 1); 
 
+
+        // Cam
         unsigned int projectionLoc = glGetUniformLocation(shaderProgram, "projection");
         glUniformMatrix4fv(projectionLoc, 1, GL_FALSE, glm::value_ptr(projection_matrix));
 
         unsigned int viewLoc = glGetUniformLocation(shaderProgram, "view");
         glUniformMatrix4fv(viewLoc, 1, GL_FALSE, glm::value_ptr(viewMatrix));
+
+        //
 
         unsigned int transformationLoc = glGetUniformLocation(shaderProgram, "transform");
         glUniformMatrix4fv(transformationLoc, 1, GL_FALSE,
