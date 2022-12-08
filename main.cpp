@@ -116,31 +116,29 @@ void Key_Callback(GLFWwindow* window,
     int mods //Modifier keys
 )
 {
-    if (key == GLFW_KEY_D &&
-        action == GLFW_PRESS) {
+    if (key == GLFW_KEY_D) {
         x_mod += 1.0f;
     }
 
-    if (key == GLFW_KEY_A &&
-        action == GLFW_PRESS) {
+    if (key == GLFW_KEY_A) {
         x_mod -= 1.0f;
     }
 
     if (key == GLFW_KEY_S) {
-        y_mod -= 1.0f;
+        z_mod += 1.0f;
     }
 
     if (key == GLFW_KEY_W) {
-        if(y_mod < 0)
-            y_mod += 1.0f;
-    }
-
-    if (key == GLFW_KEY_E) {
         z_mod -= 1.0f;
     }
 
+    if (key == GLFW_KEY_E) {
+        y_mod -= 1.0f;
+    }
+
     if (key == GLFW_KEY_Q) {
-        z_mod += 1.0f;
+        if (y_mod < 0)
+            y_mod += 1.0f;
     }
 
     // 1st and 3rd Person View
