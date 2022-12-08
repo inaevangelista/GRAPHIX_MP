@@ -14,8 +14,61 @@
 #define STB_IMAGE_IMPLEMENTATION
 #include "stb_image.h"
 
-// hello
-// test
+// Light Class
+class LightClass {
+public:
+    glm::vec3 lightPos;
+    glm::vec3 lightColor = glm::vec3(1, 1, 1);
+
+
+    LightClass(glm::vec3 pos, glm::vec3 color) {
+        lightPos = pos;
+        lightColor = color;
+
+    }
+};
+
+// Camera Base Class
+class MyCamera {
+
+    // Camera Things Coords
+    glm::vec3 cameraCenter = glm::vec3(0, 0, 0);
+    glm::mat4 view_matrix = glm::lookAt(cameraPos, cameraCenter, worldUp);
+
+public:
+    glm::mat4 projection_matrix;
+    glm::vec3 cameraPos;
+    glm::vec3 worldUp;
+
+};
+
+// Ortho Cam
+class OrthoCamera :
+    public MyCamera {
+
+public:
+    OrthoCamera(glm::mat4 projMatrix, glm::vec3 camPos, glm::vec3 wUp) {
+        projection_matrix = projMatrix;
+        cameraPos = camPos;
+        worldUp = wUp;
+    }
+
+};
+
+// Perspective Cam
+class PerspectiveCamera :
+    public MyCamera {
+
+public:
+    PerspectiveCamera(glm::mat4 projMatrix, glm::vec3 camPos, glm::vec3 wUp) {
+        projection_matrix = projMatrix;
+        cameraPos = camPos;
+        worldUp = wUp;
+    }
+
+
+};
+
 
 float mod_x = 0;
 float y_mod = 0.0f;
