@@ -76,9 +76,9 @@ void main(){
 	// adding the intensity value in lighting calculations (ambientCol, diffuse, specCol)
 	//ambientCol *= intensity; 
 	//diffuse *= intensity;
-	//specCol *= intensity;  
+	specCol *= intensity;  
 
-	//vec3 diffuse = intensity * diff * lightColor;
+	diffuse = intensity * diff * lightColor;
 
 	fragColor = vec4(specCol + diffuse + ambientCol, 1.0f) * pixelColorFinal;
 }
