@@ -56,6 +56,9 @@ int main(void)
     float screenWidth = 750.0f;
     float screenHeight = 750.0f;
 
+
+
+
     /* Create a windowed mode window and its OpenGL context */
     window = glfwCreateWindow(screenWidth, screenHeight, "Ina Evangelista", NULL, NULL);
     if (!window)
