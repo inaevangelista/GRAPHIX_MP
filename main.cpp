@@ -106,6 +106,76 @@ bool isFirstPerson = true;
 bool isTopDown = false;
 bool isThirdPerson = false;
 
+
+// variables  for mouse movement 
+#define M_PI   3.14159265358979323846264338327950288 // constant for pi
+
+float x_loc;
+float y_loc;
+
+float prev_xloc;
+float prev_yloc;
+
+float elevation, swing = 0.0;
+
+bool dragging = false;
+
+bool isNewObj = false;
+
+void cursorPositionCallback(GLFWwindow* window, double xPos, double yPos)
+{
+    std::cout << xPos << " : " << yPos << std::endl;
+
+    x_loc = xPos;
+    y_loc = yPos;
+}
+
+void mouseButtonCallback(GLFWwindow* window, int button, int action, int mods)
+{
+    if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS)
+    {
+        dragging = true;
+        prev_xloc = x_loc;
+        prev_yloc = y_loc;
+
+    }
+    else
+    {
+        if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_RELEASE)
+        {
+            dragging = false;
+        }
+    }
+}
+
+void motion(float xPos, float yPos)
+{
+    if (dragging) // if mouse is dragging then update swing and elevation
+    {
+        // we take the difference of x position and previous x and etc in order to provide rate of rotation
+        if (prev_xloc > xPos)
+        {
+            swing = fmod((swing - (float(xPos) - prev_xloc)), 360.0);
+        }
+        if (prev_xloc < xPos)
+        {
+            swing = fmod((swing - (float(xPos) - prev_xloc)), 360.0);
+        }
+        if (prev_yloc > yPos)
+        {
+            elevation = fmod((elevation - (float(yPos) - prev_yloc)), 360.0);
+        }
+        if (prev_yloc < yPos)
+        {
+            elevation = fmod((elevation + (prev_yloc - float(yPos))), 360.0);
+        }
+        prev_xloc = float(xPos); // update previous x and y
+        prev_yloc = float(yPos);
+    }
+
+
+}
+
 void Key_Callback(GLFWwindow* window,
     int key, //KeyCode
     int scanCode, //ScanCode
