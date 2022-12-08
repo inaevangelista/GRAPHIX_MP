@@ -69,46 +69,9 @@ public:
 
 };
 
-// Perspective Cam
-class PerspectiveCamera :
-    public MyCamera {
-
-public:
-    PerspectiveCamera(glm::mat4 projMatrix, glm::vec3 camPos, glm::vec3 wUp) {
-        projection_matrix = projMatrix;
-        cameraPos = camPos;
-        worldUp = wUp;
-        // change cam center if needed
-        // cameraCenter =
-
-        // change view matrix if needed (lookat)
-        // view_matrix = glm::lookAt(x,y,z)
-    }
-
-    PerspectiveCamera(glm::mat4 projMatrix, glm::vec3 camPos, glm::vec3 wUp, glm::vec3 camCenter) {
-        projection_matrix = projMatrix;
-        cameraPos = camPos;
-        worldUp = wUp;
-        cameraCenter = camCenter;
-
-        // change view matrix if needed (lookat)
-        // view_matrix = glm::lookAt(x,y,z)
-    }
-
-};
-
-
-float mod_x = 0;
-float y_mod = 0.0f;
-float z_mod = -5.0f;
-
-bool isFirstPerson = true;
-bool isTopDown = false;
-bool isThirdPerson = false;
-
+#define M_PI   3.14159265358979323846264338327950288 // constant for pi
 
 // variables  for mouse movement 
-#define M_PI   3.14159265358979323846264338327950288 // constant for pi
 
 float x_loc;
 float y_loc;
@@ -175,6 +138,51 @@ void motion(float xPos, float yPos)
 
 
 }
+
+// Perspective Cam
+class PerspectiveCamera :
+    public MyCamera {
+
+public:
+    PerspectiveCamera(glm::mat4 projMatrix, glm::vec3 camPos, glm::vec3 wUp) {
+        projection_matrix = projMatrix;
+        cameraPos = camPos;
+        worldUp = wUp;
+        // change cam center if needed
+        // cameraCenter =
+
+        // change view matrix if needed (lookat)
+        // view_matrix = glm::lookAt(x,y,z)
+    }
+
+    PerspectiveCamera(glm::mat4 projMatrix, glm::vec3 camPos, glm::vec3 wUp, glm::vec3 camCenter) {
+        projection_matrix = projMatrix;
+        cameraPos = camPos;
+        worldUp = wUp;
+        cameraCenter = camCenter;
+
+        // change view matrix if needed (lookat)
+        // view_matrix = glm::lookAt(x,y,z)
+    }
+
+    void moveCamera(float z)
+    {
+        float look_x = z * -sinf(swing * (M_PI / 180)) * cosf((elevation) * (M_PI / 180));
+        float look_y = z * -sinf((elevation) * (M_PI / 180));
+        float look_z = -z * cosf((swing) * (M_PI / 180)) * cosf((elevation) * (M_PI / 180));
+    }
+
+};
+
+
+float mod_x = 0;
+float y_mod = 0.0f;
+float z_mod = -5.0f;
+
+bool isFirstPerson = true;
+bool isTopDown = false;
+bool isThirdPerson = false;
+
 
 void Key_Callback(GLFWwindow* window,
     int key, //KeyCode
@@ -867,12 +875,13 @@ int main(void)
 
         //theta = mod_x;
         //z = z_mod;
-        theta += 0.01f;
+        //theta += 0.01f;
 
         // Camera ----------------------------------------
         if (isFirstPerson) {          
             projection_matrix = FirstPerson.projection_matrix;
-            cameraPos = FirstPerson.cameraPos;
+            //cameraPos = FirstPerson.cameraPos;
+            FirstPerson.moveCamera(z_mod);
             worldUp = FirstPerson.worldUp;
             temp_view_Matrix = FirstPerson.view_matrix;
             
@@ -896,6 +905,10 @@ int main(void)
 
         glm::vec3 cameraCenter = glm::vec3(mod_x, y_mod, 0);
         glm::mat4 viewMatrix = glm::lookAt(cameraPos, cameraCenter, worldUp);
+
+        glfwSetCursorPosCallback(window, cursorPositionCallback);
+        glfwSetMouseButtonCallback(window, mouseButtonCallback);
+        motion(x_loc, y_loc);
 
         glDepthMask(GL_FALSE);
         glDepthFunc(GL_LEQUAL);
