@@ -51,9 +51,6 @@ public:
         projection_matrix = projMatrix;
         cameraPos = camPos;
         worldUp = wUp;
-        // change cam center if needed
-        // cameraCenter =
-
         // change view matrix if needed (lookat)
         // view_matrix = glm::lookAt(x,y,z)
         
@@ -762,17 +759,16 @@ int main(void)
     glm::vec3 cameraPos = glm::vec3(0, 0, 10.0f);
     glm::vec3 worldUp = glm::vec3(0, 1.0f, 0);
     glm::mat4 cameraPosMatrix = glm::translate(glm::mat4(1.0f), cameraPos * -1.0f);
-    glm::vec3 cameraCenter = glm::vec3(mod_x, y_mod, 0);
-    glm::mat4 viewMatrix = glm::lookAt(cameraPos, cameraCenter, worldUp);
+    glm::mat4 temp_view_Matrix;
 
 
     // 1st Person
-    PerspectiveCamera FirstPerson(fp_matrix, fp_cameraPos, fp_worldUp, cameraCenter);
+    PerspectiveCamera FirstPerson(fp_matrix, fp_cameraPos, fp_worldUp);
   
     // 3rd Person
 
     // Top-Down
-    OrthoCamera TopDown(td_matrix, td_cameraPos, td_worldUp, cameraCenter);
+    OrthoCamera TopDown(td_matrix, td_cameraPos, td_worldUp);
 
     // Camera End ----------------------------------------
 
@@ -808,7 +804,7 @@ int main(void)
             projection_matrix = FirstPerson.projection_matrix;
             cameraPos = FirstPerson.cameraPos;
             worldUp = FirstPerson.worldUp;
-            viewMatrix = FirstPerson.view_matrix;
+            temp_view_Matrix = FirstPerson.view_matrix;
             
             // Remove other views
             isTopDown = false;
@@ -821,10 +817,14 @@ int main(void)
             projection_matrix = TopDown.projection_matrix;
             cameraPos = TopDown.cameraPos;
             worldUp = TopDown.worldUp;
-            viewMatrix = TopDown.view_matrix;
+            temp_view_Matrix = TopDown.view_matrix;
             isFirstPerson = false;
         }
+
         // Camera End ----------------------------------------
+
+        glm::vec3 cameraCenter = glm::vec3(mod_x, y_mod, 0);
+        glm::mat4 viewMatrix = glm::lookAt(cameraPos, cameraCenter, worldUp);
 
         glDepthMask(GL_FALSE);
         glDepthFunc(GL_LEQUAL);
