@@ -728,7 +728,7 @@ int main(void)
     glm::vec3 lightPos = glm::vec3(-5, 5, 0);
     glm::vec3 lightColor = glm::vec3(1, 1, 1);
 
-    float ambientStr = 0.8f;
+    float ambientStr = 0.2f;
     glm::vec3 ambientColor = glm::vec3(1, 1, 1);
 
     float specStr = 2.f;
