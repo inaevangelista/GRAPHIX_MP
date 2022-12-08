@@ -125,13 +125,13 @@ void motion(float xPos, float yPos)
         }
         if (prev_xloc < xPos)
         {
-            swing = fmod((swing - (float(xPos) - prev_xloc)), 360.0);
+            swing = fmod((swing + (prev_xloc - float(xPos))), 360.0);
         }
-        if (prev_yloc > yPos)
+        if (prev_yloc < yPos)
         {
             elevation = fmod((elevation - (float(yPos) - prev_yloc)), 360.0);
         }
-        if (prev_yloc < yPos)
+        if (prev_yloc > yPos)
         {
             elevation = fmod((elevation + (prev_yloc - float(yPos))), 360.0);
         }
@@ -170,11 +170,11 @@ public:
 
     void moveCamera(float z)
     {
-        float look_x = z * -sinf(swing * (M_PI / 180)) * cosf((elevation) * (M_PI / 180));
-        float look_y = z * -sinf((elevation) * (M_PI / 180));
-        float look_z = -z * cosf((swing) * (M_PI / 180)) * cosf((elevation) * (M_PI / 180));
+        float look_x = z * -sinf(swing * (M_PI / 360)) * cosf((elevation) * (M_PI / 360));
+        float look_y = z * -sinf((elevation) * (M_PI / 360));
+        float look_z = -z * cosf((swing) * (M_PI / 360)) * cosf((elevation) * (M_PI / 360));
 
-        cameraPos = glm::vec3(-look_x, -look_y, look_z);
+        cameraPos = glm::vec3(look_x, -look_y, look_z);
     }
 
 };
