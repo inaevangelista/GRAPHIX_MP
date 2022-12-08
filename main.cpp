@@ -125,13 +125,13 @@ void motion(float xPos, float yPos)
         }
         if (prev_xloc < xPos)
         {
-            swing = fmod((swing - (float(xPos) - prev_xloc)), 360.0);
+            swing = fmod((swing + (prev_xloc - float(xPos))), 360.0);
         }
-        if (prev_yloc > yPos)
+        if (prev_yloc < yPos)
         {
             elevation = fmod((elevation - (float(yPos) - prev_yloc)), 360.0);
         }
-        if (prev_yloc < yPos)
+        if (prev_yloc > yPos)
         {
             elevation = fmod((elevation + (prev_yloc - float(yPos))), 360.0);
         }
@@ -170,11 +170,11 @@ public:
 
     void moveCamera(float z)
     {
-        float look_x = z * -sinf(swing * (M_PI / 180)) * cosf((elevation) * (M_PI / 180));
-        float look_y = z * -sinf((elevation) * (M_PI / 180));
-        float look_z = -z * cosf((swing) * (M_PI / 180)) * cosf((elevation) * (M_PI / 180));
+        float look_x = z * -sinf(swing * (M_PI / 360)) * cosf((elevation) * (M_PI / 360));
+        float look_y = z * -sinf((elevation) * (M_PI / 360));
+        float look_z = -z * cosf((swing) * (M_PI / 360)) * cosf((elevation) * (M_PI / 360));
 
-        cameraPos = glm::vec3(-look_x, -look_y, look_z);
+        cameraPos = glm::vec3(look_x, -look_y, look_z);
     }
 
 };
@@ -802,7 +802,7 @@ int main(void)
 
     float rot_x, rot_y, rot_z;
     rot_x = rot_y = rot_z = 0;
-    rot_x = 1.0f;
+    rot_y = 1.0f;
 
     float theta = -180.0f;
 
@@ -813,14 +813,16 @@ int main(void)
         100.0f // far
     );
 
-    glm::vec3 lightPos = glm::vec3(-5, 5, 0);
+    //glm::vec3(x + x_mod, y + y_mod, z + z_mod));
+
+    glm::vec3 lightPos = glm::vec3(x, y , z );
     glm::vec3 lightColor = glm::vec3(1, 1, 1);
 
     float ambientStr = 0.2f;
     glm::vec3 ambientColor = glm::vec3(1, 1, 1);
 
-    float specStr = 2.f;
-    float specPhong = 2.0f; 
+    float specStr = 10.f;
+    float specPhong = 0.2f; 
 
     // Camera ---------------------------------------------
        
@@ -838,6 +840,7 @@ int main(void)
     // CamPos
     glm::vec3 fp_cameraPos = glm::vec3(0, 0, 25.0f);
     glm::vec3 td_cameraPos = glm::vec3(0, 10, 5.0f);
+    //glm::vec3 tp_cameraPos = glm::vec3(0, 10, 50.0f);
 
     // World Up
     glm::vec3 fp_worldUp = glm::vec3(0, 1.0f, 0);
@@ -854,6 +857,7 @@ int main(void)
     PerspectiveCamera FirstPerson(fp_matrix, fp_cameraPos, fp_worldUp);
   
     // 3rd Person
+    //PerspectiveCamera ThirdPerson(fp_matrix, fp_cameraPos, fp_worldUp);
 
     // Top-Down
     OrthoCamera TopDown(td_matrix, td_cameraPos, td_worldUp);
@@ -882,6 +886,8 @@ int main(void)
         //glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
         lightPos.z = x_mod;
+
+        lightPos = glm::vec3(x + x_mod, y + y_mod, z + z_mod + (-7));
 
         //theta = x_mod;
         //z = z_mod;
