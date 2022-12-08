@@ -166,7 +166,7 @@ public:
         float look_y = z * -sinf((elevation) * (M_PI / 360));
         float look_z = -z * cosf((swing) * (M_PI / 360)) * cosf((elevation) * (M_PI / 360));
 
-        cameraPos = glm::vec3(look_x, -look_y, look_z);
+        cameraPos = glm::vec3(look_x, -look_y, look_z+10);
     }
 
 };
@@ -856,7 +856,7 @@ int main(void)
     // CamPos
     glm::vec3 fp_cameraPos = glm::vec3(0, 0, 25.0f);
     glm::vec3 td_cameraPos = glm::vec3(0, 10, 5.0f);
-    glm::vec3 tp_cameraPos = glm::vec3(5, 5, 15.0f);
+    glm::vec3 tp_cameraPos = glm::vec3(5, 5, 55.0f);
 
     // World Up
     glm::vec3 fp_worldUp = glm::vec3(0, 1.0f, 0);
@@ -913,7 +913,7 @@ int main(void)
         // Camera ----------------------------------------
         if (isFirstPerson) {          
             projection_matrix = FirstPerson.projection_matrix;
-            FirstPerson.moveCamera(z_mod);
+            
             cameraPos = FirstPerson.cameraPos;
             worldUp = FirstPerson.worldUp;
             temp_view_Matrix = FirstPerson.view_matrix;
@@ -926,6 +926,7 @@ int main(void)
             // Third Person
             projection_matrix = ThirdPerson.projection_matrix;
             cameraPos = ThirdPerson.cameraPos;
+            ThirdPerson.moveCamera(z_mod);
             worldUp = ThirdPerson.worldUp;
             temp_view_Matrix = ThirdPerson.view_matrix;
 
