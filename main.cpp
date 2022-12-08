@@ -14,6 +14,9 @@
 #define STB_IMAGE_IMPLEMENTATION
 #include "stb_image.h"
 
+// Player Class
+
+
 // Light Class
 class LightClass {
 public:
@@ -26,7 +29,6 @@ public:
         lightColor = color;
 
     }
-
 };
 
 // Camera Base Class
@@ -99,7 +101,7 @@ public:
 };
 
 
-float mod_x = 0;
+float x_mod = 0;
 float y_mod = 0.0f;
 float z_mod = -5.0f;
 
@@ -114,12 +116,14 @@ void Key_Callback(GLFWwindow* window,
     int mods //Modifier keys
 )
 {
-    if (key == GLFW_KEY_D ) {
-        mod_x += 1.0f;
+    if (key == GLFW_KEY_D &&
+        action == GLFW_PRESS) {
+        x_mod += 1.0f;
     }
 
-    if (key == GLFW_KEY_A ) {
-        mod_x -= 1.0f;
+    if (key == GLFW_KEY_A &&
+        action == GLFW_PRESS) {
+        x_mod -= 1.0f;
     }
 
     if (key == GLFW_KEY_S) {
@@ -127,7 +131,16 @@ void Key_Callback(GLFWwindow* window,
     }
 
     if (key == GLFW_KEY_W) {
-        y_mod += 1.0f;
+        if(y_mod < 0)
+            y_mod += 1.0f;
+    }
+
+    if (key == GLFW_KEY_E) {
+        z_mod -= 1.0f;
+    }
+
+    if (key == GLFW_KEY_Q) {
+        z_mod += 1.0f;
     }
 
     // 1st and 3rd Person View
@@ -727,7 +740,7 @@ int main(void)
     glm::vec3 lightPos = glm::vec3(-5, 5, 0);
     glm::vec3 lightColor = glm::vec3(1, 1, 1);
 
-    float ambientStr = 0.8f;
+    float ambientStr = 0.2f;
     glm::vec3 ambientColor = glm::vec3(1, 1, 1);
 
     float specStr = 2.f;
@@ -792,7 +805,7 @@ int main(void)
 
         //glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-        lightPos.z = mod_x;
+        lightPos.z = x_mod;
 
         //theta = mod_x;
         //z = z_mod;
@@ -818,14 +831,12 @@ int main(void)
             worldUp = TopDown.worldUp;
             temp_view_Matrix = TopDown.view_matrix;
             isFirstPerson = false;
-
-            // 
-            glm::vec3 playerCenter = glm::vec3(mod_x, y_mod, 0);
         }
+        //
 
         // Camera End ----------------------------------------
 
-        glm::vec3 cameraCenter = glm::vec3(mod_x, y_mod, 0);
+        glm::vec3 cameraCenter = glm::vec3(0, 0, 0);
         glm::mat4 viewMatrix = glm::lookAt(cameraPos, cameraCenter, worldUp);
 
         glDepthMask(GL_FALSE);
@@ -858,10 +869,9 @@ int main(void)
         //////////////////////////
 
         glm::mat4 transformation_matrix = glm::mat4(1.0f);
-
         //Translation
         transformation_matrix = glm::translate(identity_matrix,
-            glm::vec3(x, y, z + -10.0f));
+            glm::vec3(x + x_mod, y + y_mod, z + z_mod));
         //Scale
         transformation_matrix = glm::scale(transformation_matrix,
             glm::vec3(scale_x, scale_y, scale_z));
@@ -907,15 +917,11 @@ int main(void)
         glBindTexture(GL_TEXTURE_2D, norm_tex);
         glUniform1i(tex1Address, 1); 
 
-
-        // Cam
         unsigned int projectionLoc = glGetUniformLocation(shaderProgram, "projection");
         glUniformMatrix4fv(projectionLoc, 1, GL_FALSE, glm::value_ptr(projection_matrix));
 
         unsigned int viewLoc = glGetUniformLocation(shaderProgram, "view");
         glUniformMatrix4fv(viewLoc, 1, GL_FALSE, glm::value_ptr(viewMatrix));
-
-        //
 
         unsigned int transformationLoc = glGetUniformLocation(shaderProgram, "transform");
         glUniformMatrix4fv(transformationLoc, 1, GL_FALSE,
