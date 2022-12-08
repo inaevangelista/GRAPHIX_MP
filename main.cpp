@@ -32,17 +32,17 @@ public:
 class MyCamera {
 
     // Camera Things Coords
-    glm::vec3 cameraCenter = glm::vec3(0, 0, 0);
-    glm::mat4 view_matrix = glm::lookAt(cameraPos, cameraCenter, worldUp);
 
 public:
     glm::mat4 projection_matrix;
     glm::vec3 cameraPos;
     glm::vec3 worldUp;
-
+    glm::vec3 cameraCenter = glm::vec3(0, 0, 0);
+    glm::mat4 view_matrix = glm::lookAt(cameraPos, cameraCenter, worldUp);
 };
 
 // Ortho Cam
+//Here
 class OrthoCamera :
     public MyCamera {
 
@@ -51,6 +51,23 @@ public:
         projection_matrix = projMatrix;
         cameraPos = camPos;
         worldUp = wUp;
+        // change cam center if needed
+        // cameraCenter =
+
+        // change view matrix if needed (lookat)
+        // view_matrix = glm::lookAt(x,y,z)
+        
+    }
+
+    OrthoCamera(glm::mat4 projMatrix, glm::vec3 camPos, glm::vec3 wUp, glm::vec3 camCenter) {
+        projection_matrix = projMatrix;
+        cameraPos = camPos;
+        worldUp = wUp;
+        cameraCenter = camCenter;
+
+        // change view matrix if needed (lookat)
+        // view_matrix = glm::lookAt(glm::lookAt(cameraPos, cameraCenter, worldUp);
+
     }
 
 };
@@ -64,8 +81,22 @@ public:
         projection_matrix = projMatrix;
         cameraPos = camPos;
         worldUp = wUp;
+        // change cam center if needed
+        // cameraCenter =
+
+        // change view matrix if needed (lookat)
+        // view_matrix = glm::lookAt(x,y,z)
     }
 
+    PerspectiveCamera(glm::mat4 projMatrix, glm::vec3 camPos, glm::vec3 wUp, glm::vec3 camCenter) {
+        projection_matrix = projMatrix;
+        cameraPos = camPos;
+        worldUp = wUp;
+        cameraCenter = camCenter;
+
+        // change view matrix if needed (lookat)
+        // view_matrix = glm::lookAt(x,y,z)
+    }
 
 };
 
@@ -73,6 +104,11 @@ public:
 float mod_x = 0;
 float y_mod = 0.0f;
 float z_mod = -5.0f;
+
+bool isFirstPerson = true;
+bool isTopDown = false;
+bool isThirdPerson = false;
+
 void Key_Callback(GLFWwindow* window,
     int key, //KeyCode
     int scanCode, //ScanCode
@@ -97,6 +133,20 @@ void Key_Callback(GLFWwindow* window,
     if (key == GLFW_KEY_W) {
         y_mod += 1.0f;
     }
+
+    // 1st and 3rd Person View
+    if (key == GLFW_KEY_1 ) {
+        isFirstPerson = true;
+        isTopDown = false;
+        
+    }
+
+    // Top Down View
+    if (key == GLFW_KEY_2) {
+        isFirstPerson = false;
+        isTopDown = true;
+    }
+
 }
 
 int main(void)
@@ -687,7 +737,44 @@ int main(void)
     float specStr = 2.f;
     float specPhong = 2.0f; 
 
-    
+    // Camera ---------------------------------------------
+       
+    /*
+        fp = first person
+        td = top down
+        tp = third person
+
+    */
+
+    // proj matrix
+    glm::mat4 fp_matrix = glm::perspective(glm::radians(60.0f), screenHeight / screenWidth, 0.1f, 100.0f);
+    glm::mat4 td_matrix = glm::ortho(-10.0f, 10.0f, -10.0f, 10.0f, -100.0f, 100.0f);
+
+    // CamPos
+    glm::vec3 fp_cameraPos = glm::vec3(0, 0, 25.0f);
+    glm::vec3 td_cameraPos = glm::vec3(0, 10, 5.0f);
+
+    // World Up
+    glm::vec3 fp_worldUp = glm::vec3(0, 1.0f, 0);
+    glm::vec3 td_worldUp = glm::vec3(0, 1.0f, 0);
+
+    // Default Values -- Can change
+    glm::vec3 cameraPos = glm::vec3(0, 0, 10.0f);
+    glm::vec3 worldUp = glm::vec3(0, 1.0f, 0);
+    glm::mat4 cameraPosMatrix = glm::translate(glm::mat4(1.0f), cameraPos * -1.0f);
+    glm::vec3 cameraCenter = glm::vec3(mod_x, y_mod, 0);
+    glm::mat4 viewMatrix = glm::lookAt(cameraPos, cameraCenter, worldUp);
+
+
+    // 1st Person
+    PerspectiveCamera FirstPerson(fp_matrix, fp_cameraPos, fp_worldUp, cameraCenter);
+  
+    // 3rd Person
+
+    // Top-Down
+    OrthoCamera TopDown(td_matrix, td_cameraPos, td_worldUp, cameraCenter);
+
+    // Camera End ----------------------------------------
 
     /* Loop until the user closes the window */
     while (!glfwWindowShouldClose(window))
@@ -716,13 +803,28 @@ int main(void)
         //z = z_mod;
         theta += 0.01f;
 
-        glm::vec3 cameraPos = glm::vec3(0, 0, 10.0f);
-        glm::mat4 cameraPosMatrix = glm::translate(glm::mat4(1.0f), cameraPos * -1.0f);
+        // Camera ----------------------------------------
+        if (isFirstPerson) {          
+            projection_matrix = FirstPerson.projection_matrix;
+            cameraPos = FirstPerson.cameraPos;
+            worldUp = FirstPerson.worldUp;
+            viewMatrix = FirstPerson.view_matrix;
+            
+            // Remove other views
+            isTopDown = false;
 
-        glm::vec3 WorldUp = glm::vec3(0, 1.0f, 0);
-        glm::vec3 cameraCenter = glm::vec3(mod_x, y_mod, 0);
+        } else if(isThirdPerson) {
+            // Third Person
 
-        glm::mat4 viewMatrix = glm::lookAt(cameraPos, cameraCenter, WorldUp);
+        } else if(isTopDown) {
+            // Top Down
+            projection_matrix = TopDown.projection_matrix;
+            cameraPos = TopDown.cameraPos;
+            worldUp = TopDown.worldUp;
+            viewMatrix = TopDown.view_matrix;
+            isFirstPerson = false;
+        }
+        // Camera End ----------------------------------------
 
         glDepthMask(GL_FALSE);
         glDepthFunc(GL_LEQUAL);
