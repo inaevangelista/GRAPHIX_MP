@@ -14,6 +14,9 @@
 #define STB_IMAGE_IMPLEMENTATION
 #include "stb_image.h"
 
+// Player Class
+
+
 // Light Class
 class LightClass {
 public:
@@ -98,7 +101,7 @@ public:
 };
 
 
-float mod_x = 0;
+float x_mod = 0;
 float y_mod = 0.0f;
 float z_mod = -5.0f;
 
@@ -115,12 +118,12 @@ void Key_Callback(GLFWwindow* window,
 {
     if (key == GLFW_KEY_D &&
         action == GLFW_PRESS) {
-        mod_x += 1.0f;
+        x_mod += 1.0f;
     }
 
     if (key == GLFW_KEY_A &&
         action == GLFW_PRESS) {
-        mod_x -= 1.0f;
+        x_mod -= 1.0f;
     }
 
     if (key == GLFW_KEY_S) {
@@ -128,7 +131,16 @@ void Key_Callback(GLFWwindow* window,
     }
 
     if (key == GLFW_KEY_W) {
-        y_mod += 1.0f;
+        if(y_mod < 0)
+            y_mod += 1.0f;
+    }
+
+    if (key == GLFW_KEY_E) {
+        z_mod -= 1.0f;
+    }
+
+    if (key == GLFW_KEY_Q) {
+        z_mod += 1.0f;
     }
 
     // 1st and 3rd Person View
@@ -793,7 +805,7 @@ int main(void)
 
         //glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-        lightPos.z = mod_x;
+        lightPos.z = x_mod;
 
         //theta = mod_x;
         //z = z_mod;
@@ -824,7 +836,7 @@ int main(void)
 
         // Camera End ----------------------------------------
 
-        glm::vec3 cameraCenter = glm::vec3(mod_x, y_mod, 0);
+        glm::vec3 cameraCenter = glm::vec3(0, 0, 0);
         glm::mat4 viewMatrix = glm::lookAt(cameraPos, cameraCenter, worldUp);
 
         glDepthMask(GL_FALSE);
@@ -859,7 +871,7 @@ int main(void)
         glm::mat4 transformation_matrix = glm::mat4(1.0f);
         //Translation
         transformation_matrix = glm::translate(identity_matrix,
-            glm::vec3(x, y, z + -10.0f));
+            glm::vec3(x + x_mod, y + y_mod, z + z_mod));
         //Scale
         transformation_matrix = glm::scale(transformation_matrix,
             glm::vec3(scale_x, scale_y, scale_z));
