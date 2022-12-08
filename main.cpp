@@ -72,6 +72,76 @@ public:
 
 };
 
+#define M_PI   3.14159265358979323846264338327950288 // constant for pi
+
+// variables  for mouse movement 
+
+float x_loc;
+float y_loc;
+
+float prev_xloc;
+float prev_yloc;
+
+float elevation, swing = 0.0;
+
+bool dragging = false;
+
+bool isNewObj = false;
+
+void cursorPositionCallback(GLFWwindow* window, double xPos, double yPos)
+{
+    std::cout << xPos << " : " << yPos << std::endl;
+
+    x_loc = xPos;
+    y_loc = yPos;
+}
+
+void mouseButtonCallback(GLFWwindow* window, int button, int action, int mods)
+{
+    if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS)
+    {
+        dragging = true;
+        prev_xloc = x_loc;
+        prev_yloc = y_loc;
+
+    }
+    else
+    {
+        if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_RELEASE)
+        {
+            dragging = false;
+        }
+    }
+}
+
+void motion(float xPos, float yPos)
+{
+    if (dragging) // if mouse is dragging then update swing and elevation
+    {
+        // we take the difference of x position and previous x and etc in order to provide rate of rotation
+        if (prev_xloc > xPos)
+        {
+            swing = fmod((swing - (float(xPos) - prev_xloc)), 360.0);
+        }
+        if (prev_xloc < xPos)
+        {
+            swing = fmod((swing - (float(xPos) - prev_xloc)), 360.0);
+        }
+        if (prev_yloc > yPos)
+        {
+            elevation = fmod((elevation - (float(yPos) - prev_yloc)), 360.0);
+        }
+        if (prev_yloc < yPos)
+        {
+            elevation = fmod((elevation + (prev_yloc - float(yPos))), 360.0);
+        }
+        prev_xloc = float(xPos); // update previous x and y
+        prev_yloc = float(yPos);
+    }
+
+
+}
+
 // Perspective Cam
 class PerspectiveCamera :
     public MyCamera {
@@ -98,6 +168,15 @@ public:
         // view_matrix = glm::lookAt(x,y,z)
     }
 
+    void moveCamera(float z)
+    {
+        float look_x = z * -sinf(swing * (M_PI / 180)) * cosf((elevation) * (M_PI / 180));
+        float look_y = z * -sinf((elevation) * (M_PI / 180));
+        float look_z = -z * cosf((swing) * (M_PI / 180)) * cosf((elevation) * (M_PI / 180));
+
+        cameraPos = glm::vec3(-look_x, -look_y, look_z);
+    }
+
 };
 
 
@@ -108,6 +187,7 @@ float z_mod = -5.0f;
 bool isFirstPerson = true;
 bool isTopDown = false;
 bool isThirdPerson = false;
+
 
 void Key_Callback(GLFWwindow* window,
     int key, //KeyCode
@@ -166,8 +246,6 @@ int main(void)
 
     float screenWidth = 750.0f;
     float screenHeight = 750.0f;
-
-
 
 
     /* Create a windowed mode window and its OpenGL context */
@@ -805,13 +883,14 @@ int main(void)
 
         lightPos.z = x_mod;
 
-        //theta = mod_x;
+        //theta = x_mod;
         //z = z_mod;
-        theta += 0.01f;
+        //theta += 0.01f;
 
         // Camera ----------------------------------------
         if (isFirstPerson) {          
             projection_matrix = FirstPerson.projection_matrix;
+            FirstPerson.moveCamera(z_mod);
             cameraPos = FirstPerson.cameraPos;
             worldUp = FirstPerson.worldUp;
             temp_view_Matrix = FirstPerson.view_matrix;
@@ -836,6 +915,10 @@ int main(void)
 
         glm::vec3 cameraCenter = glm::vec3(0, 0, 0);
         glm::mat4 viewMatrix = glm::lookAt(cameraPos, cameraCenter, worldUp);
+
+        glfwSetCursorPosCallback(window, cursorPositionCallback);
+        glfwSetMouseButtonCallback(window, mouseButtonCallback);
+        motion(x_loc, y_loc);
 
         glDepthMask(GL_FALSE);
         glDepthFunc(GL_LEQUAL);
