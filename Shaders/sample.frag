@@ -15,6 +15,7 @@ uniform vec3 ambientColor;
 uniform vec3 cameraPos;
 uniform float specStr;
 uniform float specPhong;
+uniform float add_int;
 
 in vec2 texCoord;
 in vec3 normCoord;
@@ -72,6 +73,8 @@ void main(){
 	
 	// the formula for instensity of the light
 	float intensity = 1.0 / (distance * distance);  
+
+	intensity = intensity + add_int;
 
 	// adding the intensity value in lighting calculations (ambientCol, diffuse, specCol)
 	//ambientCol *= intensity; 
