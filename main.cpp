@@ -380,6 +380,9 @@ int main(void)
         path.c_str()
     );
 
+    
+
+    /// Submarine Textures -------------------------------
     stbi_set_flip_vertically_on_load(true);
     int img_width, img_height, color_channels;
     unsigned char* tex_bytes = stbi_load("3D/sub_tex.png",
@@ -407,35 +410,6 @@ int main(void)
 
     glGenerateMipmap(GL_TEXTURE_2D);
     stbi_image_free(tex_bytes);
-
-    /// Submarine Textures -------------------------------
-
-    //int img_width, img_height, color_channels;
-    unsigned char* tex_bytes2 = stbi_load("3D/SubmarineUV.jpg",
-        &img_width,
-        &img_height,
-        &color_channels, 0);
-
-    GLuint texture2;
-    glGenTextures(2, &texture2);
-    glActiveTexture(GL_TEXTURE2);
-    glBindTexture(GL_TEXTURE_2D, texture2);
-
-    glTexImage2D(
-        GL_TEXTURE_2D,
-        0,
-        GL_RGB, //GL_RGB = jpegs / pngs w/o a
-        //GL_RGBA = png / images w a
-        img_width,
-        img_height,
-        0,
-        GL_RGB,
-        GL_UNSIGNED_BYTE,
-        tex_bytes2
-    );
-
-    glGenerateMipmap(GL_TEXTURE_2D);
-    stbi_image_free(tex_bytes2);
 
     ///
 
@@ -877,6 +851,256 @@ int main(void)
 
     /////////////////////////////
 
+    std::string path2 = "3D/puffer.obj";
+    std::vector<tinyobj::shape_t> shapes2;
+    std::vector<tinyobj::material_t> material2;
+    std::string warning2, error2;
+
+    tinyobj::attrib_t attributes2;
+
+    GLfloat UV2[]{
+        0.f, 1.f,
+        0.f, 0.f,
+        1.f, 1.f,
+        1.f, 0.f,
+        1.f, 1.f,
+        1.f, 0.f,
+        0.f, 1.f,
+        0.f, 0.f
+    };
+
+    bool success2 = tinyobj::LoadObj(
+        &attributes2,
+        &shapes2,
+        &material2,
+        &warning2,
+        &error2,
+        path2.c_str()
+    );
+
+    
+
+    /// Submarine Textures -------------------------------
+
+    stbi_set_flip_vertically_on_load(true);
+    unsigned char* tex_bytes2 = stbi_load("3D/puffer_tex.png",
+        &img_width,
+        &img_height,
+        &color_channels, 0);
+
+    GLuint texture2;
+    glGenTextures(0, &texture2);
+    glActiveTexture(GL_TEXTURE0);
+    glBindTexture(GL_TEXTURE_2D, texture2);
+
+    glTexImage2D(
+        GL_TEXTURE_2D,
+        0,
+        GL_RGBA, //GL_RGB = jpegs / pngs w/o a
+        //GL_RGBA = png / images w a
+        img_width,
+        img_height,
+        0,
+        GL_RGBA,
+        GL_UNSIGNED_BYTE,
+        tex_bytes2
+    );
+
+    glGenerateMipmap(GL_TEXTURE_2D);
+    stbi_image_free(tex_bytes2);
+
+    ///
+
+    //int img_width, img_height, color_channels;
+    unsigned char* norm_bytes2 = stbi_load("3D/metal_normal.png",
+        &img_width,
+        &img_height,
+        &color_channels, 0);
+
+    GLuint norm_tex2;
+    glGenTextures(1, &norm_tex2);
+    glActiveTexture(GL_TEXTURE1);
+    glBindTexture(GL_TEXTURE_2D, norm_tex2);
+
+    glTexImage2D(
+        GL_TEXTURE_2D,
+        0,
+        GL_RGBA, //GL_RGB = jpegs / pngs w/o a
+        //GL_RGBA = png / images w a
+        img_width,
+        img_height,
+        0,
+        GL_RGBA,
+        GL_UNSIGNED_BYTE,
+        norm_bytes2
+    );
+
+    glGenerateMipmap(GL_TEXTURE_2D);
+    stbi_image_free(norm_bytes2);
+
+    ///
+
+    glEnable(GL_DEPTH_TEST);
+
+    //glViewport(, 0, screenWidth, screenHeight);
+    //glViewport(320, 0, 320, 480);
+
+    glfwSetKeyCallback(window, Key_Callback);
+
+    // shader
+
+    std::fstream vertSrc2("Shaders/sample2.vert");
+    std::stringstream vertBuff2;
+    vertBuff2 << vertSrc2.rdbuf();
+    std::string vertString2 = vertBuff2.str();
+    const char* v2 = vertString2.c_str();
+
+    std::fstream fragSrc2("Shaders/sample2.frag");
+    std::stringstream fragBuff2;
+    fragBuff2 << fragSrc2.rdbuf();
+    std::string fragString2 = fragBuff2.str();
+    const char* f2 = fragString2.c_str();
+
+    GLuint vertexShader2 = glCreateShader(GL_VERTEX_SHADER);
+    glShaderSource(vertexShader2, 1, &v2, NULL);
+    glCompileShader(vertexShader2);
+
+    GLuint fragmentShader2 = glCreateShader(GL_FRAGMENT_SHADER);
+    glShaderSource(fragmentShader2, 1, &f2, NULL);
+    glCompileShader(fragmentShader2);
+
+    GLuint shaderProgram2 = glCreateProgram();
+    glAttachShader(shaderProgram2, vertexShader2);
+    glAttachShader(shaderProgram2, fragmentShader2);
+
+    glLinkProgram(shaderProgram2);
+
+
+    //stbi_set_flip_vertically_on_load(true);
+
+
+    std::vector<GLuint> mesh_indices2;
+    for (int i = 0; i < shapes2[0].mesh.indices.size(); i++) {
+        mesh_indices2.push_back(
+            shapes2[0].mesh.indices[i].vertex_index
+        );
+    }
+
+    std::vector<GLfloat> fullVertexData2;
+    for (int i = 0; i < shapes2[0].mesh.indices.size(); i++) {
+        tinyobj::index_t vData2 = shapes2[0].mesh.indices[i];
+
+        int vertexIndex2 = vData2.vertex_index * 3;
+        int uvIndex2 = vData2.texcoord_index * 2;
+
+
+        //X
+        fullVertexData2.push_back(
+            attributes2.vertices[(vData2.vertex_index * 3)]
+        );
+
+        //Y
+        fullVertexData2.push_back(
+            attributes2.vertices[(vData2.vertex_index * 3) + 1]
+        );
+
+        //Z
+        fullVertexData2.push_back(
+            attributes2.vertices[(vData2.vertex_index * 3) + 2]
+        );
+
+        fullVertexData2.push_back(
+            attributes2.normals[(vData2.normal_index * 3)]
+        );
+
+        fullVertexData2.push_back(
+            attributes2.normals[(vData2.normal_index * 3) + 1]
+        );
+
+        fullVertexData2.push_back(
+            attributes2.normals[(vData2.normal_index * 3) + 2]
+        );
+
+        //U
+        fullVertexData2.push_back(
+            attributes2.texcoords[(vData2.texcoord_index * 2)]
+        );
+
+        //V
+        fullVertexData2.push_back(
+            attributes2.texcoords[(vData2.texcoord_index * 2) + 1]
+        );
+
+    }
+
+    GLfloat vertices2[]{
+        0.f, 0.5f, 0.f,     //0
+        -0.5f, -0.5f, 0.f,  //1
+        0.5f, -0.5f, 0.f    //2
+    };
+
+    GLuint indices2[]{
+        0,1,2 //Triangle 1
+    };
+
+    GLuint VAO2, VBO2;
+    //Generate and Assign ID to VAO
+    glGenVertexArrays(1, &VAO2);
+    //Generate and Assign ID to VBO
+    glGenBuffers(1, &VBO2);
+
+
+
+    glBindVertexArray(VAO2);
+    glBindBuffer(GL_ARRAY_BUFFER, VBO2);
+    glBufferData(
+        GL_ARRAY_BUFFER,
+        sizeof(GL_FLOAT) * fullVertexData2.size(),
+        fullVertexData2.data(),
+        GL_STATIC_DRAW
+    );
+
+    glVertexAttribPointer(
+        0, //Position
+        3, //XYZ
+        GL_FLOAT,
+        GL_FALSE,
+        //XYZ UV so 5 // asignment 3 : 8 bc of adding 3 normals (5(xyzuv) + 3(normals))
+        8 * sizeof(GL_FLOAT), //How much 3 is in float
+        (void*)0);
+
+    GLintptr normPtr2 = 3 * sizeof(float);
+    glVertexAttribPointer(
+        1,
+        3,
+        GL_FLOAT,
+        GL_FALSE,
+        8 * sizeof(GL_FLOAT),
+        (void*)normPtr2
+
+    );
+
+    GLintptr uvPtr2 = 6 * sizeof(GL_FLOAT);
+
+    glVertexAttribPointer(
+        2,
+        2,
+        GL_FLOAT,
+        GL_FALSE,
+        8 * sizeof(GL_FLOAT),
+        (void*)uvPtr2
+    );
+
+    
+    glEnableVertexAttribArray(0);
+    glEnableVertexAttribArray(1);
+    glEnableVertexAttribArray(2);
+
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+    glBindVertexArray(0);
+
+    /////////////////////////////
+
     //3x3 Identity Matrix
     glm::mat3 identity_matrix3 = glm::mat3(1.0f);
     //4x4 Identity Matrix
@@ -890,11 +1114,15 @@ int main(void)
 
     float scale_x, scale_y, scale_z, scale_x2, scale_y2, scale_z2;
     scale_x = scale_y = scale_z = 0.8f;
-    scale_x2 = scale_y2 = scale_z2 = 3.1f;
+    scale_x2 = scale_y2 = scale_z2 = 5.1f;
 
     float rot_x, rot_y, rot_z;
     rot_x = rot_y = rot_z = 0;
     rot_y = 1.0f;
+
+    float rot_x2, rot_y2, rot_z2;
+    rot_x2 = rot_y2 = rot_z2 = 0;
+    rot_x2 = 1.0f;
 
     float theta = -180.0f;
 
@@ -1153,59 +1381,68 @@ int main(void)
         glBindVertexArray(VAO);
 
         glDrawArrays(GL_TRIANGLES, 0, fullVertexData.size() / 14);
+        
 
         ////////////////////////
 
-        /*
-        
+        glm::mat4 transformation_matrix2 = glm::mat4(1.0f);
         //Translation
-        transformation_matrix = glm::translate(identity_matrix,
-            glm::vec3(x + 2.5f, y, z));
+        transformation_matrix2 = glm::translate(identity_matrix,
+            glm::vec3(-1, 10, -10));
         //Scale
-        transformation_matrix = glm::scale(transformation_matrix,
-            glm::vec3(scale_x, scale_y, scale_z));
-        //Rotation
-        transformation_matrix = glm::rotate(transformation_matrix,
+        transformation_matrix2 = glm::scale(transformation_matrix2,
+            glm::vec3(scale_x2, scale_y2, scale_z2));
+        //Rotate
+        transformation_matrix2 = glm::rotate(transformation_matrix2,
             glm::radians(theta),
-            glm::normalize(glm::vec3(rot_x, rot_y, rot_z))
+            glm::normalize(glm::vec3(rot_x2, rot_y2, rot_z2 ))
         );
 
-        glUniform3fv(lightPosLoc, 1, glm::value_ptr(lightPos));
+        unsigned int lightPosLoc2 = glGetUniformLocation(shaderProgram, "lightPos");
+        glUniform3fv(lightPosLoc2, 1, glm::value_ptr(lightPos));
 
-        glUniform3fv(lightColorLoc, 1, glm::value_ptr(lightColor));
+        unsigned int lightColorLoc2 = glGetUniformLocation(shaderProgram, "lightColor");
+        glUniform3fv(lightColorLoc2, 1, glm::value_ptr(lightColor));
 
-        glUniform1f(ambientStrLoc, ambientStr);
+        //unsigned int ambientStrLoc2 = glGetUniformLocation(shaderProgram, "ambientStr");
+        //glUniform1f(ambientStrLoc2, ambientStr);
 
-        glUniform3fv(ambientColorLoc, 1, glm::value_ptr(ambientColor));
+        unsigned int ambientColorLoc2 = glGetUniformLocation(shaderProgram, "ambientColor");
+        glUniform3fv(ambientColorLoc2, 1, glm::value_ptr(ambientColor));
 
-        glUniform3fv(cameraPosLoc, 1, glm::value_ptr(cameraPos));
+        unsigned int cameraPosLoc2 = glGetUniformLocation(shaderProgram, "cameraPos");
+        glUniform3fv(cameraPosLoc2, 1, glm::value_ptr(cameraPos));
 
-        glUniform1f(specStrLoc, specStr);
+        //unsigned int  specStrLoc2 = glGetUniformLocation(shaderProgram, "specStr");
+       //glUniform1f(specStrLoc2, specStr);
 
-        glUniform1f(specPhongLoc, specPhong);
+        //unsigned int specPhongLoc2 = glGetUniformLocation(shaderProgram, "specPhong");
+        //glUniform1f(specPhongLoc2, specPhong);
 
-        //glBindTexture(GL_TEXTURE_2D, texture);
-        //glUniform1i(texOAddress, 0);
-
-        glBindTexture(GL_TEXTURE_2D, texture2);
-        glUniform1i(tex2Address, 2);
-
-        glBindTexture(GL_TEXTURE_2D, norm_tex);
-        glUniform1i(tex1Address, 1);
-
-        glUniformMatrix4fv(projectionLoc, 1, GL_FALSE, glm::value_ptr(projection_matrix));
-
-        glUniformMatrix4fv(viewLoc, 1, GL_FALSE, glm::value_ptr(viewMatrix));
-
-        glUniformMatrix4fv(transformationLoc, 1, GL_FALSE,
-            glm::value_ptr(transformation_matrix));
-        */
+        //unsigned int addLoc = glGetUniformLocation(shaderProgram2, "add_int");
+        //glUniform1f(addLoc, add_int);
 
 
-        ////////////////////////
+        //GLuint tex2Address = glGetUniformLocation(shaderProgram, "tex0");
+        //glBindTexture(GL_TEXTURE_2D, texture2);
+        //glUniform1i(tex2Address, 0);
 
+        unsigned int projectionLoc2 = glGetUniformLocation(shaderProgram, "projection");
+        glUniformMatrix4fv(projectionLoc2, 1, GL_FALSE, glm::value_ptr(projection_matrix));
 
-        //glDrawArrays(GL_TRIANGLES, 0, fullVertexData.size() / 5);
+        unsigned int viewLoc2 = glGetUniformLocation(shaderProgram, "view");
+        glUniformMatrix4fv(viewLoc2, 1, GL_FALSE, glm::value_ptr(viewMatrix));
+
+        unsigned int transformationLoc2 = glGetUniformLocation(shaderProgram, "transform");
+        glUniformMatrix4fv(transformationLoc2, 1, GL_FALSE,
+            glm::value_ptr(transformation_matrix2));
+
+        glUseProgram(shaderProgram);
+
+        glBindVertexArray(VAO2);
+        glDrawArrays(GL_TRIANGLES, 0, fullVertexData2.size() / 8);
+        
+        ///////////////////////
 
         /* Swap front and back buffers */
         glfwSwapBuffers(window);
@@ -1216,6 +1453,9 @@ int main(void)
 
     glDeleteVertexArrays(1, &VAO);
     glDeleteBuffers(1, &VBO);
+
+    glDeleteVertexArrays(1, &VAO2);
+    glDeleteBuffers(1, &VBO2);
 
 
     glfwTerminate();
