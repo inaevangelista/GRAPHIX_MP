@@ -31,6 +31,23 @@ public:
     }
 };
 
+class Player {
+public:
+    float subscale_x, subscale_y, subscale_z, subscale_x2, subscale_y2, subscale_z2;
+    float subrot_x, subrot_y, subrot_z;
+ 
+
+    Player(float scale_x, float scale_y, float scale_z, float rot_x, float rot_y, float rot_z) {
+        subscale_x = scale_x;
+        subscale_y = scale_y;
+        subscale_z = scale_z;
+
+        subrot_x = rot_x;
+        subrot_y = rot_y;
+        subrot_z = rot_z;
+    }
+};
+
 // Camera Base Class
 class MyCamera {
 
@@ -212,6 +229,8 @@ void Key_Callback(GLFWwindow* window,
         else {
             // Move camera only
             x_mod_ortho += 1.0f;
+
+
         }
     }
 
@@ -940,6 +959,7 @@ int main(void)
     glm::mat4 cameraPosMatrix = glm::translate(glm::mat4(1.0f), cameraPos * -1.0f);
     glm::mat4 temp_view_Matrix;
 
+    Player Submarine(scale_x, scale_y, scale_z, rot_x, rot_y, rot_z);
 
     // 1st Person
     PerspectiveCamera FirstPerson(fp_matrix, fp_cameraPos, fp_worldUp);
@@ -1080,14 +1100,14 @@ int main(void)
 
         // Translation
         transformation_matrix = glm::translate(identity_matrix,
-            glm::vec3(x + x_mod, y + y_mod, z + z_mod));
+            glm::vec3(Submarine.subscale_x + x_mod, Submarine.subscale_y + y_mod, Submarine.subscale_z + z_mod));
         // Scale
         transformation_matrix = glm::scale(transformation_matrix,
-            glm::vec3(scale_x, scale_y, scale_z));
+            glm::vec3(Submarine.subscale_x, Submarine.subscale_y, Submarine.subscale_z));
         // Rotation
         transformation_matrix = glm::rotate(transformation_matrix,
             glm::radians(theta),
-            glm::normalize(glm::vec3(rot_x , rot_y, rot_z))
+            glm::normalize(glm::vec3(Submarine.subrot_x, Submarine.subrot_y, Submarine.subrot_z))
         );
 
         unsigned int lightPosLoc = glGetUniformLocation(shaderProgram, "lightPos");
