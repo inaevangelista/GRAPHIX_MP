@@ -213,10 +213,12 @@ void Key_Callback(GLFWwindow* window,
         // Disables movement when topdown view
         if (!isTopDown) {
             leftright_x += 5.0f;
+            x_mod += 1.0f;
         }
         else {
             // Move camera only
             x_mod_ortho += 1.0f;
+            
         }
     }
 
@@ -224,11 +226,12 @@ void Key_Callback(GLFWwindow* window,
         // Disables movement when topdown view
         if (!isTopDown) {
             leftright_z -= 5.0f;
-
+            x_mod -= 1.0f;
         }
         else {
             // Move camera only
             x_mod_ortho -= 1.0f;
+            
         }
     }
 
@@ -966,33 +969,18 @@ int main(void)
         /* Render here */
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-        //glEnable(GL_BLEND);
-    
-        //glBlendFunc(GL_ONE_MINUS_DST_COLOR, GL_ONE_MINUS_DST_ALPHA);
-        //glBlendEquation(GL_FUNC_SUBTRACT);
-
-        //
-        //glBlendFunc(GL_ONE_MINUS_DST_COLOR, GL_ONE_MINUS_SRC_COLOR);
-        //glBlendEquation(GL_FUNC_SUBTRACT);
-
-        //assignment 5?
-        //glBlendFunc(GL_ONE_MINUS_DST_COLOR, GL_DST_COLOR);
-        //glBlendEquation(GL_FUNC_SUBTRACT);
-
-        //glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-
         lightPos.z = x_mod;
 
         lightPos = glm::vec3(x + x_mod, y + y_mod, z + z_mod + (-7));
-
-        //theta = x_mod;
-        //z = z_mod;
-        //theta += 0.01f;
 
         glm::vec3 cameraCenter;
         glm::vec3 cameraCenter_Ortho;
 
         // Camera ----------------------------------------
+
+        //fp_cameraPos = glm::vec3(x, y, z + z_mod + (20));
+        //PerspectiveCamera FirstPerson(fp_matrix, fp_cameraPos, fp_worldUp);
+
         if (isFirstPerson) {          
             projection_matrix = FirstPerson.projection_matrix;
             cameraPos = FirstPerson.cameraPos;
@@ -1028,6 +1016,8 @@ int main(void)
             isFirstPerson = false;
             isThirdPerson = false;
         }
+
+        
 
         // Camera End ----------------------------------------
 
@@ -1103,9 +1093,9 @@ int main(void)
         // Camera follow object
         if (!isTopDown)
             if (isFirstPerson)
-                viewMatrix = glm::lookAt(cameraPos, glm::vec3(x + x_mod, y + y_mod, z + z_mod), fp_worldUp);
+                viewMatrix = glm::lookAt(cameraPos, glm::vec3(x, y, z), fp_worldUp);
             else if (isThirdPerson)
-                viewMatrix = glm::lookAt(cameraPos, glm::vec3(x + x_mod, y + y_mod, z + z_mod), tp_worldUp);
+                viewMatrix = glm::lookAt(cameraPos, glm::vec3(x, y, z), tp_worldUp);
         // ---------------
 
 
