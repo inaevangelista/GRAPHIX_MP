@@ -87,7 +87,7 @@ bool isNewObj = false;
 
 void cursorPositionCallback(GLFWwindow* window, double xPos, double yPos)
 {
-    std::cout << xPos << " : " << yPos << std::endl;
+    //std::cout << xPos << " : " << yPos << std::endl;
 
     x_loc = xPos;
     y_loc = yPos;
@@ -942,7 +942,7 @@ int main(void)
 
     // World Up
     glm::vec3 fp_worldUp = glm::vec3(0, 1.0f, 0);
-    glm::vec3 td_worldUp = glm::vec3(0, -90.0f, 0);
+    glm::vec3 td_worldUp = glm::vec3(0, 1.0f, 0);
     glm::vec3 tp_worldUp = glm::vec3(0, 1.0f, 0);
 
     // Default Values of Old Camera
@@ -963,11 +963,27 @@ int main(void)
 
     // Camera (End) ----------------------------------------
 
+    float prev_depth = 0;
+
     /* Loop until the user closes the window */
     while (!glfwWindowShouldClose(window))
     {
         /* Render here */
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+        // Print depth
+       
+        if (prev_depth == y_mod) { }
+        else { 
+            prev_depth = y_mod;
+            if (prev_depth == 0) {
+                std::cout << "Submarine is at Depth 0" << std::endl;
+            } else {
+                std::cout << "Depth: " << prev_depth * -1 << std::endl;
+            }
+
+        }
+
 
         lightPos.z = x_mod;
 
