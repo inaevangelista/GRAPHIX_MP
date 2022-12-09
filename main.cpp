@@ -194,33 +194,73 @@ void Key_Callback(GLFWwindow* window,
     int mods //Modifier keys
 )
 {
-    if (key == GLFW_KEY_D) {
-        x_mod += 1.0f;
+    if (key == GLFW_KEY_D) { 
+        // Disables movement when topdown view
+        if (!isTopDown) {
+            x_mod += 1.0f;
+        }
+        else {
+            // Move camera only
+            // z_mod_ortho -= 1.0f
+        }
     }
 
-    if (key == GLFW_KEY_A) {
-        x_mod -= 1.0f;
+    if (key == GLFW_KEY_A) {  
+        // Disables movement when topdown view
+        if (!isTopDown) {
+            x_mod -= 1.0f;
+        }
+        else {
+            // Move camera only
+            // z_mod_ortho -= 1.0f
+        }
     }
 
     if (key == GLFW_KEY_S) {
-        z_mod += 1.0f;
+        // Disables movement when topdown view
+        if (!isTopDown) {
+            z_mod += 1.0f;
+        }
+        else {
+            // Move camera only
+            // z_mod_ortho -= 1.0f
+        }
     }
 
     if (key == GLFW_KEY_W) {
-        z_mod -= 1.0f;
-
-        x
-
+        // Disables movement when topdown view
+        if (!isTopDown) {
+            z_mod -= 1.0f;
+        } else {
+            // Move camera only
+            // z_mod_ortho -= 1.0f
+        }
 
     }
 
     if (key == GLFW_KEY_E) {
-        y_mod -= 1.0f;
+        
+        // Disables movement when topdown view
+        if (!isTopDown) {
+            y_mod -= 1.0f;
+        }
+        else {
+            // Move camera only
+            // z_mod_ortho -= 1.0f
+        }
+
     }
 
     if (key == GLFW_KEY_Q) {
-        if (y_mod < 0)
-            y_mod += 1.0f;
+        // Disables movement when topdown view
+        if (!isTopDown) {
+            if (y_mod < 0)
+                y_mod += 1.0f;
+        }
+        else {
+            // Move camera only
+            // z_mod_ortho -= 1.0f
+        }
     }
 
     // Point light intensity
