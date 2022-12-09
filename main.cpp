@@ -184,6 +184,11 @@ float x_mod_ortho = 0.0f;
 float y_mod_ortho = 0.0f;
 float z_mod_ortho = -5.0f;
 
+float leftright_x = 0.0f;
+float leftright_y = 0.0f;
+float leftright_z = 0.0f;
+
+
 void Key_Callback(GLFWwindow* window,
     int key, //KeyCode
     int scanCode, //ScanCode
@@ -207,7 +212,7 @@ void Key_Callback(GLFWwindow* window,
     if (key == GLFW_KEY_D) { 
         // Disables movement when topdown view
         if (!isTopDown) {
-            x_mod += 1.0f;
+            leftright_x += 5.0f;
         }
         else {
             // Move camera only
@@ -218,7 +223,8 @@ void Key_Callback(GLFWwindow* window,
     if (key == GLFW_KEY_A) {  
         // Disables movement when topdown view
         if (!isTopDown) {
-            x_mod -= 1.0f;
+            leftright_z -= 5.0f;
+
         }
         else {
             // Move camera only
@@ -988,6 +994,7 @@ int main(void)
         if (isFirstPerson) {          
             projection_matrix = FirstPerson.projection_matrix;
             cameraPos = FirstPerson.cameraPos;
+            cameraCenter = lightPos;
             worldUp = FirstPerson.worldUp;
             temp_view_Matrix = FirstPerson.view_matrix;
             
@@ -1002,7 +1009,6 @@ int main(void)
             cameraCenter = lightPos;
             ThirdPerson.moveCamera(z_mod);
             worldUp = ThirdPerson.worldUp;
-            temp_view_Matrix = ThirdPerson.view_matrix;
 
             // Remove other views
             isFirstPerson = false;
@@ -1084,11 +1090,21 @@ int main(void)
         // Scale
         transformation_matrix = glm::scale(transformation_matrix,
             glm::vec3(scale_x, scale_y, scale_z));
+
         // Rotation
         transformation_matrix = glm::rotate(transformation_matrix,
             glm::radians(theta),
-            glm::normalize(glm::vec3(rot_x , rot_y, rot_z))
+            glm::normalize(glm::vec3(rot_x, rot_y, rot_z))
         );
+
+        // Camera follow object
+        if (!isTopDown)
+            if (isFirstPerson)
+                viewMatrix = glm::lookAt(cameraPos, glm::vec3(x + x_mod, y + y_mod, z + z_mod), fp_worldUp);
+            else if (isThirdPerson)
+                viewMatrix = glm::lookAt(cameraPos, glm::vec3(x + x_mod, y + y_mod, z + z_mod), tp_worldUp);
+        // ---------------
+
 
         unsigned int lightPosLoc = glGetUniformLocation(shaderProgram, "lightPos");
         glUniform3fv(lightPosLoc, 1, glm::value_ptr(lightPos));
