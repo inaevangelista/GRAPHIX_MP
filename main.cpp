@@ -925,14 +925,16 @@ int main(void)
 
     */
 
+    float sky_td_matrix = 3.0f;
+
     // Matrix per view
-    glm::mat4 fp_matrix = glm::perspective(glm::radians(60.0f), screenHeight / screenWidth, 0.1f, 100.0f);
-    glm::mat4 td_matrix = glm::ortho(-5.0f, 5.0f, -5.0f, 5.0f, -50.0f, 1000.0f);
-    glm::mat4 tp_matrix = glm::perspective(glm::radians(90.0f), screenHeight / screenWidth, 0.1f, 50.0f);
+    glm::mat4 fp_matrix = glm::perspective(glm::radians(60.0f), screenHeight / screenWidth, 0.1f, 1000.0f);
+    glm::mat4 td_matrix = glm::ortho(-sky_td_matrix, sky_td_matrix, -sky_td_matrix, sky_td_matrix, -100.0f, 1000.0f);
+    glm::mat4 tp_matrix = glm::perspective(glm::radians(90.0f), screenHeight / screenWidth, 0.1f, 500.0f);
 
     // Camera Position
     glm::vec3 fp_cameraPos = glm::vec3(0, 0, 25.0f);
-    glm::vec3 td_cameraPos = glm::vec3(0, 20.f, 0.f);
+    glm::vec3 td_cameraPos = glm::vec3(0, 20.f, -100.f);
     glm::vec3 tp_cameraPos = glm::vec3(5, 5.f, 55.0f);
 
     // World Up
@@ -1049,8 +1051,9 @@ int main(void)
         glUseProgram(skybox_shaderProgram);
 
         glm::mat4 sky_view = glm::mat4(1.f);
-
-        sky_view = glm::mat4(glm::mat3(viewMatrix));
+        
+        if(!isTopDown)
+            sky_view = glm::mat4(glm::mat3(viewMatrix));
 
         unsigned int sky_projectionLoc = glGetUniformLocation(skybox_shaderProgram, "projection");
         glUniformMatrix4fv(sky_projectionLoc, 1, GL_FALSE, glm::value_ptr(projection_matrix));
