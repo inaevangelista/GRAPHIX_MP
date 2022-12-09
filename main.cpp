@@ -180,8 +180,7 @@ public:
 };
 
 
-float x_mod = 0;
-float y_mod = 0.0f;
+float x_mod, y_mod, f_mod = 0.0f;
 float z_mod = -5.0f;
 
 bool isFirstPerson = true;
@@ -219,6 +218,18 @@ void Key_Callback(GLFWwindow* window,
     if (key == GLFW_KEY_Q) {
         if (y_mod < 0)
             y_mod += 1.0f;
+    }
+
+    // Point light intensity
+    // low
+    // medium
+    // high
+    if (key == GLFW_KEY_F && action == GLFW_PRESS) {
+        if (f_mod < 0.06f)
+            f_mod += 0.02f;
+
+        if (f_mod == 0.06f)
+            f_mod = 0.0f;
     }
 
     // 1st and 3rd Person View
@@ -993,6 +1004,9 @@ int main(void)
         GLuint texOAddress = glGetUniformLocation(shaderProgram, "tex0");
         glBindTexture(GL_TEXTURE_2D, texture);
         glUniform1i(texOAddress, 0);
+
+        unsigned int addLoc = glGetUniformLocation(shaderProgram, "add_int");
+        glUniform1f(addLoc, f_mod);
 
         //glActiveTexture(GL_TEXTURE2);
         //GLuint tex2Address = glGetUniformLocation(shaderProgram, "tex2");
