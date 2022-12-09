@@ -184,9 +184,6 @@ float x_mod_ortho = 0.0f;
 float y_mod_ortho = 0.0f;
 float z_mod_ortho = -5.0f;
 
-
-
-
 void Key_Callback(GLFWwindow* window,
     int key, //KeyCode
     int scanCode, //ScanCode
@@ -194,6 +191,19 @@ void Key_Callback(GLFWwindow* window,
     int mods //Modifier keys
 )
 {
+    /*
+       Movement Controls (WASD - QE)
+        Submarine Mode (1st Person & 3rd Person)
+        W - Move Forward
+        A - Turn Left
+        S - Move Backwards
+        D - Turn Right
+
+        Camera Mode (TopDown View)
+        WASD - Move Camera around
+
+    */
+
     if (key == GLFW_KEY_D) { 
         // Disables movement when topdown view
         if (!isTopDown) {
@@ -244,10 +254,6 @@ void Key_Callback(GLFWwindow* window,
         if (!isTopDown) {
             y_mod -= 1.0f;
         }
-        else {
-            // Move camera only
-            //z_mod_ortho -= 1.0f
-        }
 
     }
 
@@ -257,16 +263,15 @@ void Key_Callback(GLFWwindow* window,
             if (y_mod < 0)
                 y_mod += 1.0f;
         }
-        else {
-            // Move camera only
-            // z_mod_ortho -= 1.0f
-        }
+
     }
 
-    // Point light intensity
-    // low
-    // medium
-    // high
+    /*
+        Point Light Intensity 
+        - Controls the light intensity of the submarine
+        - 3 values (Low, Medium, High)
+    */
+
     if (key == GLFW_KEY_F && action == GLFW_PRESS) {
         if (f_mod < 0.06f)
             f_mod += 0.02f;
@@ -298,9 +303,7 @@ void Key_Callback(GLFWwindow* window,
 
             // Next Persp
             lastPerspective = false;
-        }
-        
-        
+        } 
     }
 
     // Top Down View
@@ -395,7 +398,8 @@ int main(void)
 
     glGenerateMipmap(GL_TEXTURE_2D);
     stbi_image_free(tex_bytes);
-    ///
+
+    /// Submarine Textures -------------------------------
 
     //int img_width, img_height, color_channels;
     unsigned char* tex_bytes2 = stbi_load("3D/SubmarineUV.jpg",
@@ -588,6 +592,7 @@ int main(void)
 
     glGenTextures(1, &skyboxTex);
     glBindTexture(GL_TEXTURE_CUBE_MAP, skyboxTex);
+
 
     //Prevents pixelating
     glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
@@ -893,6 +898,8 @@ int main(void)
 
     //glm::vec3(x + x_mod, y + y_mod, z + z_mod));
 
+    // Light ----------------------------------------
+
     glm::vec3 lightPos = glm::vec3(x, y , z );
     glm::vec3 lightColor = glm::vec3(1, 1, 1);
 
@@ -902,6 +909,8 @@ int main(void)
     float specStr = 10.f;
     float specPhong = 0.2f; 
 
+    // Light (End) ------------------------------------
+
     // Camera ---------------------------------------------
     /*
         fp = first person
@@ -910,12 +919,12 @@ int main(void)
 
     */
 
-    // proj matrix
+    // Matrix per view
     glm::mat4 fp_matrix = glm::perspective(glm::radians(60.0f), screenHeight / screenWidth, 0.1f, 100.0f);
     glm::mat4 td_matrix = glm::ortho(-5.0f, 5.0f, -5.0f, 5.0f, -50.0f, 1000.0f);
     glm::mat4 tp_matrix = glm::perspective(glm::radians(90.0f), screenHeight / screenWidth, 0.1f, 50.0f);
 
-    // CamPos
+    // Camera Position
     glm::vec3 fp_cameraPos = glm::vec3(0, 0, 25.0f);
     glm::vec3 td_cameraPos = glm::vec3(0, 20.f, 0.f);
     glm::vec3 tp_cameraPos = glm::vec3(5, 5.f, 55.0f);
@@ -925,7 +934,7 @@ int main(void)
     glm::vec3 td_worldUp = glm::vec3(0, -90.0f, 0);
     glm::vec3 tp_worldUp = glm::vec3(0, 1.0f, 0);
 
-    // Default Values -- Can change
+    // Default Values of Old Camera
     glm::vec3 cameraPos = glm::vec3(0, 0, 10.0f);
     glm::vec3 worldUp = glm::vec3(0, 1.0f, 0);
     glm::mat4 cameraPosMatrix = glm::translate(glm::mat4(1.0f), cameraPos * -1.0f);
@@ -941,7 +950,7 @@ int main(void)
     // Top-Down
     OrthoCamera TopDown(td_matrix, td_cameraPos, td_worldUp);
 
-    // Camera End ----------------------------------------
+    // Camera (End) ----------------------------------------
 
     /* Loop until the user closes the window */
     while (!glfwWindowShouldClose(window))
@@ -1011,7 +1020,6 @@ int main(void)
             isFirstPerson = false;
             isThirdPerson = false;
         }
-        //
 
         // Camera End ----------------------------------------
 
@@ -1024,10 +1032,6 @@ int main(void)
             // overwrite viewMatrix
             glm::mat4 viewMatrix = glm::lookAt(cameraPos, cameraCenter_Ortho, worldUp);
         }
-           
-
-          
-
 
         glfwSetCursorPosCallback(window, cursorPositionCallback);
         glfwSetMouseButtonCallback(window, mouseButtonCallback);
@@ -1053,9 +1057,6 @@ int main(void)
             glUniformMatrix4fv(sky_viewLoc, 1, GL_FALSE, glm::value_ptr(glm::mat4(sky_view)));
         }
         
-        
-        
-
         glBindVertexArray(skyboxVAO);
         glActiveTexture(GL_TEXTURE0);
         glBindTexture(GL_TEXTURE_CUBE_MAP, skyboxTex);
@@ -1068,17 +1069,22 @@ int main(void)
 
         glUseProgram(shaderProgram);
 
-        //////////////////////////
+        /*
+            Object, Camera & Light Placements
+            - Position
+            - Rotation
+            - Scale
+        */
 
         glm::mat4 transformation_matrix = glm::mat4(1.0f);
 
-        //Translation
+        // Translation
         transformation_matrix = glm::translate(identity_matrix,
             glm::vec3(x + x_mod, y + y_mod, z + z_mod));
-        //Scale
+        // Scale
         transformation_matrix = glm::scale(transformation_matrix,
             glm::vec3(scale_x, scale_y, scale_z));
-        //Rotation
+        // Rotation
         transformation_matrix = glm::rotate(transformation_matrix,
             glm::radians(theta),
             glm::normalize(glm::vec3(rot_x , rot_y, rot_z))
