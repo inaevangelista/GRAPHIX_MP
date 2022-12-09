@@ -337,7 +337,7 @@ int main(void)
     float half_width = half_height * aspect;
 
     /* Create a windowed mode window and its OpenGL context */
-    window = glfwCreateWindow(screenWidth, screenHeight, "Ina Evangelista", NULL, NULL);
+    window = glfwCreateWindow(screenWidth, screenHeight, "Group 22", NULL, NULL);
     if (!window)
     {
         glfwTerminate();
