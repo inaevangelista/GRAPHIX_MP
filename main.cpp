@@ -139,6 +139,16 @@ void motion(float xPos, float yPos)
 
 }
 
+float x_mod = 0;
+float y_mod = 0.0f;
+float z_mod = -5.0f;
+
+bool isFirstPerson = true;
+bool isTopDown = false;
+bool isThirdPerson = false;
+bool lastPerspective = false;
+
+
 // Perspective Cam
 class PerspectiveCamera :
     public MyCamera {
@@ -156,11 +166,11 @@ public:
         worldUp = wUp;
         cameraCenter = camCenter;
 
-        // change view matrix if needed (lookat)
+        // change view matrix if needed1 (lookat)
         // view_matrix = glm::lookAt(x,y,z)
     }
 
-    void moveCamera(float z)
+    void moveCameraThirdPerson(float z)
     {
         float look_x = z * -sinf(swing * (M_PI / 360)) * cosf((elevation) * (M_PI / 360));
         float look_y = z * -sinf((elevation) * (M_PI / 360));
@@ -169,18 +179,12 @@ public:
         cameraPos = glm::vec3(look_x, -look_y, look_z);
     }
 
+    void moveCameraFirstPerson()
+    {
+        cameraPos = glm::vec3(-x_mod, -y_mod, -z_mod);
+    }
+
 };
-
-
-float x_mod = 0;
-float y_mod = 0.0f;
-float z_mod = -5.0f;
-
-bool isFirstPerson = true;
-bool isTopDown = false;
-bool isThirdPerson = false;
-bool lastPerspective = false;
-
 
 void Key_Callback(GLFWwindow* window,
     int key, //KeyCode
@@ -913,7 +917,7 @@ int main(void)
         // Camera ----------------------------------------
         if (isFirstPerson) {          
             projection_matrix = FirstPerson.projection_matrix;
-            FirstPerson.moveCamera(z_mod);
+            FirstPerson.moveCameraFirstPerson();
             cameraPos = FirstPerson.cameraPos;
             worldUp = FirstPerson.worldUp;
             temp_view_Matrix = FirstPerson.view_matrix;
@@ -925,6 +929,7 @@ int main(void)
         } else if(isThirdPerson) {
             // Third Person
             projection_matrix = ThirdPerson.projection_matrix;
+            ThirdPerson.moveCameraThirdPerson(z_mod);
             cameraPos = ThirdPerson.cameraPos;
             worldUp = ThirdPerson.worldUp;
             temp_view_Matrix = ThirdPerson.view_matrix;
