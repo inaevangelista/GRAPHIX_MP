@@ -912,8 +912,8 @@ int main(void)
 
     // proj matrix
     glm::mat4 fp_matrix = glm::perspective(glm::radians(60.0f), screenHeight / screenWidth, 0.1f, 100.0f);
-    glm::mat4 td_matrix = glm::ortho(-3.0f, 3.0f, -3.0f, 3.0f, -50.0f, 1000.0f);
-    glm::mat4 tp_matrix = glm::perspective(glm::radians(90.0f), screenHeight / screenWidth, 0.1f, 100.0f);
+    glm::mat4 td_matrix = glm::ortho(-5.0f, 5.0f, -5.0f, 5.0f, -50.0f, 1000.0f);
+    glm::mat4 tp_matrix = glm::perspective(glm::radians(90.0f), screenHeight / screenWidth, 0.1f, 50.0f);
 
     // CamPos
     glm::vec3 fp_cameraPos = glm::vec3(0, 0, 25.0f);
