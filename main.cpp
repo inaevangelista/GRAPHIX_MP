@@ -201,7 +201,7 @@ void Key_Callback(GLFWwindow* window,
         }
         else {
             // Move camera only
-            // z_mod_ortho -= 1.0f
+            x_mod_ortho += 1.0f;
         }
     }
 
@@ -212,7 +212,7 @@ void Key_Callback(GLFWwindow* window,
         }
         else {
             // Move camera only
-            // z_mod_ortho -= 1.0f
+            x_mod_ortho -= 1.0f;
         }
     }
 
@@ -223,7 +223,7 @@ void Key_Callback(GLFWwindow* window,
         }
         else {
             // Move camera only
-            // z_mod_ortho -= 1.0f
+            z_mod_ortho += 1.0f;
         }
     }
 
@@ -233,7 +233,7 @@ void Key_Callback(GLFWwindow* window,
             z_mod -= 1.0f;
         } else {
             // Move camera only
-            // z_mod_ortho -= 1.0f
+            z_mod_ortho -= 1.0f;
         }
 
     }
@@ -246,7 +246,7 @@ void Key_Callback(GLFWwindow* window,
         }
         else {
             // Move camera only
-            // z_mod_ortho -= 1.0f
+            //z_mod_ortho -= 1.0f
         }
 
     }
@@ -912,7 +912,7 @@ int main(void)
 
     // proj matrix
     glm::mat4 fp_matrix = glm::perspective(glm::radians(60.0f), screenHeight / screenWidth, 0.1f, 100.0f);
-    glm::mat4 td_matrix = glm::ortho(-10.0f, 10.0f, -10.0f, 10.0f, -100.0f, 100.0f);
+    glm::mat4 td_matrix = glm::ortho(-3.0f, 3.0f, -3.0f, 3.0f, -50.0f, 1000.0f);
     glm::mat4 tp_matrix = glm::perspective(glm::radians(90.0f), screenHeight / screenWidth, 0.1f, 100.0f);
 
     // CamPos
@@ -973,6 +973,7 @@ int main(void)
         //theta += 0.01f;
 
         glm::vec3 cameraCenter;
+        glm::vec3 cameraCenter_Ortho;
 
         // Camera ----------------------------------------
         if (isFirstPerson) {          
@@ -1002,6 +1003,7 @@ int main(void)
             // Top Down
             projection_matrix = TopDown.projection_matrix;
             cameraPos = TopDown.cameraPos;
+            cameraCenter_Ortho = glm::vec3(lightPos.x + x_mod_ortho, lightPos.y + y_mod_ortho, lightPos.z + z_mod_ortho);
             worldUp = TopDown.worldUp;
             temp_view_Matrix = TopDown.view_matrix;
             
@@ -1014,7 +1016,18 @@ int main(void)
         // Camera End ----------------------------------------
 
         // glm::vec3 cameraCenter = glm::vec3(0, 0, 0);
+
+        // NOT TopDown Camera ViewMatrix 
         glm::mat4 viewMatrix = glm::lookAt(cameraPos, cameraCenter, worldUp);
+
+        if (isTopDown) {
+            // overwrite viewMatrix
+            glm::mat4 viewMatrix = glm::lookAt(cameraPos, cameraCenter_Ortho, worldUp);
+        }
+           
+
+          
+
 
         glfwSetCursorPosCallback(window, cursorPositionCallback);
         glfwSetMouseButtonCallback(window, mouseButtonCallback);
@@ -1037,7 +1050,7 @@ int main(void)
 
         // If Topdown -- overwrite
         if (isTopDown) {
-            glUniformMatrix4fv(sky_viewLoc, 1, GL_FALSE, glm::value_ptr(glm::mat4(temp_view_Matrix)));
+            glUniformMatrix4fv(sky_viewLoc, 1, GL_FALSE, glm::value_ptr(glm::mat4(sky_view)));
         }
         
         
