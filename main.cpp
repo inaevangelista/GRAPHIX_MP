@@ -903,7 +903,6 @@ int main(void)
     float specPhong = 0.2f; 
 
     // Camera ---------------------------------------------
-       
     /*
         fp = first person
         td = top down
@@ -918,12 +917,12 @@ int main(void)
 
     // CamPos
     glm::vec3 fp_cameraPos = glm::vec3(0, 0, 25.0f);
-    glm::vec3 td_cameraPos = glm::vec3(0, 10, 5.0f);
-    glm::vec3 tp_cameraPos = glm::vec3(5, 5, 55.0f);
+    glm::vec3 td_cameraPos = glm::vec3(0, 20.f, 0.f);
+    glm::vec3 tp_cameraPos = glm::vec3(5, 5.f, 55.0f);
 
     // World Up
     glm::vec3 fp_worldUp = glm::vec3(0, 1.0f, 0);
-    glm::vec3 td_worldUp = glm::vec3(0, 1.0f, 0);
+    glm::vec3 td_worldUp = glm::vec3(0, -90.0f, 0);
     glm::vec3 tp_worldUp = glm::vec3(0, 1.0f, 0);
 
     // Default Values -- Can change
@@ -973,10 +972,11 @@ int main(void)
         //z = z_mod;
         //theta += 0.01f;
 
+        glm::vec3 cameraCenter;
+
         // Camera ----------------------------------------
         if (isFirstPerson) {          
             projection_matrix = FirstPerson.projection_matrix;
-            
             cameraPos = FirstPerson.cameraPos;
             worldUp = FirstPerson.worldUp;
             temp_view_Matrix = FirstPerson.view_matrix;
@@ -989,6 +989,7 @@ int main(void)
             // Third Person
             projection_matrix = ThirdPerson.projection_matrix;
             cameraPos = ThirdPerson.cameraPos;
+            cameraCenter = lightPos;
             ThirdPerson.moveCamera(z_mod);
             worldUp = ThirdPerson.worldUp;
             temp_view_Matrix = ThirdPerson.view_matrix;
@@ -1012,7 +1013,7 @@ int main(void)
 
         // Camera End ----------------------------------------
 
-        glm::vec3 cameraCenter = glm::vec3(0, 0, 0);
+        // glm::vec3 cameraCenter = glm::vec3(0, 0, 0);
         glm::mat4 viewMatrix = glm::lookAt(cameraPos, cameraCenter, worldUp);
 
         glfwSetCursorPosCallback(window, cursorPositionCallback);
@@ -1034,6 +1035,14 @@ int main(void)
         unsigned int sky_viewLoc = glGetUniformLocation(skybox_shaderProgram, "view");
         glUniformMatrix4fv(sky_viewLoc, 1, GL_FALSE, glm::value_ptr(sky_view));
 
+        // If Topdown -- overwrite
+        if (isTopDown) {
+            glUniformMatrix4fv(sky_viewLoc, 1, GL_FALSE, glm::value_ptr(glm::mat4(temp_view_Matrix)));
+        }
+        
+        
+        
+
         glBindVertexArray(skyboxVAO);
         glActiveTexture(GL_TEXTURE0);
         glBindTexture(GL_TEXTURE_CUBE_MAP, skyboxTex);
@@ -1049,6 +1058,7 @@ int main(void)
         //////////////////////////
 
         glm::mat4 transformation_matrix = glm::mat4(1.0f);
+
         //Translation
         transformation_matrix = glm::translate(identity_matrix,
             glm::vec3(x + x_mod, y + y_mod, z + z_mod));
