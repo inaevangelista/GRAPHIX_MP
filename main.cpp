@@ -180,6 +180,12 @@ bool isTopDown = false;
 bool isThirdPerson = false;
 bool lastPerspective = false;
 
+float x_mod_ortho = 0.0f;
+float y_mod_ortho = 0.0f;
+float z_mod_ortho = -5.0f;
+
+
+
 
 void Key_Callback(GLFWwindow* window,
     int key, //KeyCode
@@ -202,6 +208,10 @@ void Key_Callback(GLFWwindow* window,
 
     if (key == GLFW_KEY_W) {
         z_mod -= 1.0f;
+
+        x
+
+
     }
 
     if (key == GLFW_KEY_E) {
@@ -272,7 +282,9 @@ int main(void)
 
     float screenWidth = 750.0f;
     float screenHeight = 750.0f;
-
+    float aspect = (float)screenWidth / screenHeight;
+    float half_height = screenHeight / 2;
+    float half_width = half_height * aspect;
 
     /* Create a windowed mode window and its OpenGL context */
     window = glfwCreateWindow(screenWidth, screenHeight, "Ina Evangelista", NULL, NULL);
