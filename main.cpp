@@ -14,8 +14,6 @@
 #define STB_IMAGE_IMPLEMENTATION
 #include "stb_image.h"
 
-// Player Class
-
 
 // Light Class
 class LightClass {
@@ -380,6 +378,8 @@ int main(void)
         path.c_str()
     );
 
+    /// Submarine Textures -------------------------------
+
     stbi_set_flip_vertically_on_load(true);
     int img_width, img_height, color_channels;
     unsigned char* tex_bytes = stbi_load("3D/sub_tex.png",
@@ -407,35 +407,6 @@ int main(void)
 
     glGenerateMipmap(GL_TEXTURE_2D);
     stbi_image_free(tex_bytes);
-
-    /// Submarine Textures -------------------------------
-
-    //int img_width, img_height, color_channels;
-    unsigned char* tex_bytes2 = stbi_load("3D/SubmarineUV.jpg",
-        &img_width,
-        &img_height,
-        &color_channels, 0);
-
-    GLuint texture2;
-    glGenTextures(2, &texture2);
-    glActiveTexture(GL_TEXTURE2);
-    glBindTexture(GL_TEXTURE_2D, texture2);
-
-    glTexImage2D(
-        GL_TEXTURE_2D,
-        0,
-        GL_RGB, //GL_RGB = jpegs / pngs w/o a
-        //GL_RGBA = png / images w a
-        img_width,
-        img_height,
-        0,
-        GL_RGB,
-        GL_UNSIGNED_BYTE,
-        tex_bytes2
-    );
-
-    glGenerateMipmap(GL_TEXTURE_2D);
-    stbi_image_free(tex_bytes2);
 
     ///
 
@@ -594,8 +565,6 @@ int main(void)
             "Skybox_UW/whirlpool_ft.png", // front
             "Skybox_UW/whirlpool_bk.png"  // back
         };
-    
-    
 
     unsigned int skyboxTex;
 
@@ -819,7 +788,6 @@ int main(void)
         3, //XYZ
         GL_FLOAT,
         GL_FALSE,
-        //XYZ UV so 5 // asignment 3 : 8 bc of adding 3 normals (5(xyzuv) + 3(normals))
         14 * sizeof(GL_FLOAT), //How much 3 is in float
         (void*)0);
         
@@ -877,20 +845,15 @@ int main(void)
 
     /////////////////////////////
 
-    //3x3 Identity Matrix
-    glm::mat3 identity_matrix3 = glm::mat3(1.0f);
     //4x4 Identity Matrix
     glm::mat4 identity_matrix = glm::mat4(1.0f);
-    glm::mat4 identity_matrix2 = glm::mat4(1.0f);
 
     float x, y, z;
     x = y = z = 0.0f;
-    //y = -0.5f;
     z = 0.0f;
 
-    float scale_x, scale_y, scale_z, scale_x2, scale_y2, scale_z2;
+    float scale_x, scale_y, scale_z;
     scale_x = scale_y = scale_z = 0.8f;
-    scale_x2 = scale_y2 = scale_z2 = 3.1f;
 
     float rot_x, rot_y, rot_z;
     rot_x = rot_y = rot_z = 0;
@@ -905,7 +868,6 @@ int main(void)
         100.0f // far
     );
 
-    //glm::vec3(x + x_mod, y + y_mod, z + z_mod));
 
     // Light ----------------------------------------
 
@@ -983,9 +945,6 @@ int main(void)
             }
 
         }
-
-
-        lightPos.z = x_mod;
 
         lightPos = glm::vec3(x + x_mod, y + y_mod, z + z_mod + (-7));
 
@@ -1143,11 +1102,6 @@ int main(void)
 
         unsigned int addLoc = glGetUniformLocation(shaderProgram, "add_int");
         glUniform1f(addLoc, f_mod);
-
-        //glActiveTexture(GL_TEXTURE2);
-        //GLuint tex2Address = glGetUniformLocation(shaderProgram, "tex2");
-        //glBindTexture(GL_TEXTURE_2D, texture2);
-        //glUniform1i(tex2Address, 2);
        
         glActiveTexture(GL_TEXTURE1);
         GLuint tex1Address = glGetUniformLocation(shaderProgram, "norm_tex");
@@ -1169,59 +1123,6 @@ int main(void)
         glBindVertexArray(VAO);
 
         glDrawArrays(GL_TRIANGLES, 0, fullVertexData.size() / 14);
-
-        ////////////////////////
-
-        /*
-        
-        //Translation
-        transformation_matrix = glm::translate(identity_matrix,
-            glm::vec3(x + 2.5f, y, z));
-        //Scale
-        transformation_matrix = glm::scale(transformation_matrix,
-            glm::vec3(scale_x, scale_y, scale_z));
-        //Rotation
-        transformation_matrix = glm::rotate(transformation_matrix,
-            glm::radians(theta),
-            glm::normalize(glm::vec3(rot_x, rot_y, rot_z))
-        );
-
-        glUniform3fv(lightPosLoc, 1, glm::value_ptr(lightPos));
-
-        glUniform3fv(lightColorLoc, 1, glm::value_ptr(lightColor));
-
-        glUniform1f(ambientStrLoc, ambientStr);
-
-        glUniform3fv(ambientColorLoc, 1, glm::value_ptr(ambientColor));
-
-        glUniform3fv(cameraPosLoc, 1, glm::value_ptr(cameraPos));
-
-        glUniform1f(specStrLoc, specStr);
-
-        glUniform1f(specPhongLoc, specPhong);
-
-        //glBindTexture(GL_TEXTURE_2D, texture);
-        //glUniform1i(texOAddress, 0);
-
-        glBindTexture(GL_TEXTURE_2D, texture2);
-        glUniform1i(tex2Address, 2);
-
-        glBindTexture(GL_TEXTURE_2D, norm_tex);
-        glUniform1i(tex1Address, 1);
-
-        glUniformMatrix4fv(projectionLoc, 1, GL_FALSE, glm::value_ptr(projection_matrix));
-
-        glUniformMatrix4fv(viewLoc, 1, GL_FALSE, glm::value_ptr(viewMatrix));
-
-        glUniformMatrix4fv(transformationLoc, 1, GL_FALSE,
-            glm::value_ptr(transformation_matrix));
-        */
-
-
-        ////////////////////////
-
-
-        //glDrawArrays(GL_TRIANGLES, 0, fullVertexData.size() / 5);
 
         /* Swap front and back buffers */
         glfwSwapBuffers(window);
